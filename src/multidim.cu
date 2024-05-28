@@ -4,6 +4,7 @@
 
 
 struct Tensor_multi {
+    int* dims;
     int dimx, dimy, dimz;
     short* data;
     int size; 
