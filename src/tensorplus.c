@@ -482,7 +482,7 @@ static PyMethodDef tensorplus_methods[] = {
     {NULL, NULL, 0, NULL}
 };
 
-static PyModuleDef tensorplus_module = {
+static PyModuleDef tensorplus = {
     PyModuleDef_HEAD_INIT,
     "tensorplus",
     PyDoc_STR("A module for tensor operations"),
