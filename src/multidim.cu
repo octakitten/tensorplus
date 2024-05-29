@@ -1,5 +1,6 @@
+#pragma once
 #include "tensor.cu"
-#include <iostream>
+
 #include <stdio.h>
 
 
@@ -33,7 +34,7 @@ struct Tensor_multi {
 
     short& tensor_at(struct Tensor_multi* tensor, int i, int j, int k) {
         if (i < 0 || i >= tensor->dimx || j < 0 || j >= tensor->dimy || k < 0 || k >= tensor->dimz) {
-            std::cerr << "Index out of bounds" << std::endl;
+            cerr << "Index out of bounds" << endl;
             exit(1);
         }
         return tensor->data[i * tensor->dimy * tensor->dimz + j * tensor->dimz + k];
@@ -142,11 +143,11 @@ void print_multi(struct Tensor_multi* tensor) {
     for (int i = 0; i < tensor->dimx; i++) {
         for (int j = 0; j < tensor->dimy; j++) {
             for (int k = 0; k < tensor->dimz; k++) {
-                std::cout << tensor_at(tensor, i, j, k) << " ";
+                cout << tensor_at(tensor, i, j, k) << " ";
             }
-            std::cout << std::endl;
+            cout << endl;
         }
-        std::cout << std::endl;
+        cout << endl;
     }
 }
 
@@ -324,11 +325,11 @@ void print_multi_inplace(struct Tensor_multi* tensor) {
     for (int i = 0; i < tensor->dimx; i++) {
         for (int j = 0; j < tensor->dimy; j++) {
             for (int k = 0; k < tensor->dimz; k++) {
-                std::cout << tensor_at(tensor, i, j, k) << " ";
+                cout << tensor_at(tensor, i, j, k) << " ";
             }
-            std::cout << std::endl;
+            cout << endl;
         }
-        std::cout << std::endl;
+        cout << endl;
     }
 }
 
@@ -380,7 +381,7 @@ void transpose_multi_inplace(struct Tensor_multi* tensor) {
 
 void reshape_multi(struct Tensor_multi* tensor, int n, int m, int k, struct Tensor_multi* result) {
     if (n * m * k != tensor->dimx * tensor->dimy * tensor->dimz) {
-        std::cerr << "Invalid dimensions for reshape" << std::endl;
+        cerr << "Invalid dimensions for reshape" << endl;
         exit(1);
     }
     result->dimx = n;
@@ -391,7 +392,7 @@ void reshape_multi(struct Tensor_multi* tensor, int n, int m, int k, struct Tens
 
 void reshape_multi_inplace(struct Tensor_multi* tensor, int n, int m, int k) {
     if (n * m * k != tensor->dimx * tensor->dimy * tensor->dimz) {
-        std::cerr << "Invalid dimensions for reshape" << std::endl;
+        cerr << "Invalid dimensions for reshape" << endl;
         exit(1);
     }
     tensor->dimx = n;
@@ -403,7 +404,7 @@ void slice_multi(struct Tensor_multi* tensor, int startx, int endx, int starty, 
     if (startx < 0 || startx >= tensor->dimx || endx < 0 || endx >= tensor->dimx || startx > endx ||
         starty < 0 || starty >= tensor->dimy || endy < 0 || endy >= tensor->dimy || starty > endy ||
         startz < 0 || startz >= tensor->dimz || endz < 0 || endz >= tensor->dimz || startz > endz) {
-        std::cerr << "Invalid slice dimensions" << std::endl;
+        cerr << "Invalid slice dimensions" << endl;
         exit(1);
     }
     result->dimx = endx - startx + 1;
@@ -416,7 +417,7 @@ void slice_multi_inplace(struct Tensor_multi* tensor, int startx, int endx, int 
     if (startx < 0 || startx >= tensor->dimx || endx < 0 || endx >= tensor->dimx || startx > endx ||
         starty < 0 || starty >= tensor->dimy || endy < 0 || endy >= tensor->dimy || starty > endy ||
         startz < 0 || startz >= tensor->dimz || endz < 0 || endz >= tensor->dimz || startz > endz) {
-        std::cerr << "Invalid slice dimensions" << std::endl;
+        cerr << "Invalid slice dimensions" << endl;
         exit(1);
     }
     tensor->dimx = endx - startx + 1;
@@ -428,7 +429,7 @@ void slice_multi_inplace(struct Tensor_multi* tensor, int startx, int endx, int 
 void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, int axis, struct Tensor_multi* result) {
     if (axis == 0) {
         if (tensor1->dimy != tensor2->dimy || tensor1->dimz != tensor2->dimz) {
-            std::cerr << "Invalid dimensions for concat" << std::endl;
+            cerr << "Invalid dimensions for concat" << endl;
             exit(1);
         }
         result->dimx = tensor1->dimx + tensor2->dimx;
@@ -451,7 +452,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
         }
     } else if (axis == 1) {
         if (tensor1->dimx != tensor2->dimx || tensor1->dimz != tensor2->dimz) {
-            std::cerr << "Invalid dimensions for concat" << std::endl;
+            cerr << "Invalid dimensions for concat" << endl;
             exit(1);
         }
         result->dimx = tensor1->dimx;
@@ -475,7 +476,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
             }
         } else if (axis == 2) {
             if (tensor1->dimx != tensor2->dimx || tensor1->dimy != tensor2->dimy) {
-                std::cerr << "Invalid dimensions for concat" << std::endl;
+                cerr << "Invalid dimensions for concat" << endl;
                 exit(1);
             }
             result->dimx = tensor1->dimx;
@@ -497,7 +498,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
                 }
             }
         } else {
-            std::cerr << "Invalid axis for concat" << std::endl;
+            cerr << "Invalid axis for concat" << endl;
             exit(1);
         }
     }
@@ -505,7 +506,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
     void concat_multi_inplace(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, int axis) {
         if (axis == 0) {
             if (tensor1->dimy != tensor2->dimy || tensor1->dimz != tensor2->dimz) {
-                std::cerr << "Invalid dimensions for concat" << std::endl;
+                cerr << "Invalid dimensions for concat" << endl;
                 exit(1);
             }
             short* temp = new short[(tensor1->dimx + tensor2->dimx) * tensor1->dimy * tensor1->dimz];
@@ -528,7 +529,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
             tensor1->dimx += tensor2->dimx;
         } else if (axis == 1) {
             if (tensor1->dimx != tensor2->dimx || tensor1->dimz != tensor2->dimz) {
-                std::cerr << "Invalid dimensions for concat" << std::endl;
+                cerr << "Invalid dimensions for concat" << endl;
                 exit(1);
             }
             short* temp = new short[tensor1->dimx * (tensor1->dimy + tensor2->dimy) * tensor1->dimz];
@@ -551,7 +552,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
             tensor1->dimy += tensor2->dimy;
         } else if (axis == 2) {
             if (tensor1->dimx != tensor2->dimx || tensor1->dimy != tensor2->dimy) {
-                std::cerr << "Invalid dimensions for concat" << std::endl;
+                cerr << "Invalid dimensions for concat" << endl;
                 exit(1);
             }
             short* temp = new short[tensor1->dimx * tensor1->dimy * (tensor1->dimz + tensor2->dimz)];
@@ -573,7 +574,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
             tensor1->data = temp;
             tensor1->dimz += tensor2->dimz;
         } else {
-            std::cerr << "Invalid axis for concat" << std::endl;
+            cerr << "Invalid axis for concat" << endl;
             exit(1);
         }
     }
@@ -607,7 +608,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
             result2->dimz = tensor->dimz - tensor->dimz / 2;
             result2->data = tensor->data + tensor->dimx * tensor->dimy * tensor->dimz / 2;
         } else {
-            std::cerr << "Invalid axis for split" << std::endl;
+            cerr << "Invalid axis for split" << endl;
             exit(1);
         }
     }
@@ -626,7 +627,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
             tensor2->dimz = tensor2->dimz - tensor1->dimz;
             tensor2->data = tensor1->data + tensor1->dimx * tensor1->dimy * tensor1->dimz;
         } else {
-            std::cerr << "Invalid axis for split" << std::endl;
+            cerr << "Invalid axis for split" << endl;
             exit(1);
         }
     }
@@ -732,7 +733,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
                 }
             }
         } else {
-            std::cerr << "Invalid axis for sum" << std::endl;
+            cerr << "Invalid axis for sum" << endl;
             exit(1);
         }
     }
@@ -778,7 +779,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
             tensor->data = temp;
             tensor->dimz = 1;
         } else {
-            std::cerr << "Invalid axis for sum" << std::endl;
+            cerr << "Invalid axis for sum" << endl;
             exit(1);
         }
     }
@@ -801,7 +802,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
 
     void dot_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, struct Tensor_multi* result) {
         if (tensor1->dimy != tensor2->dimx) {
-            std::cerr << "Invalid dimensions for dot" << std::endl;
+            cerr << "Invalid dimensions for dot" << endl;
             exit(1);
         }
         result->dimx = tensor1->dimx;
@@ -820,7 +821,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
 
     void dot_multi_inplace(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2) {
         if (tensor1->dimy != tensor2->dimx) {
-            std::cerr << "Invalid dimensions for dot" << std::endl;
+            cerr << "Invalid dimensions for dot" << endl;
             exit(1);
         }
         short* temp = new short[tensor1->dimx * tensor2->dimy];
@@ -839,7 +840,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
 
     void conv2d_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, struct Tensor_multi* result, int stride, int padding) {
         if (tensor2->dimz != tensor1->dimz) {
-            std::cerr << "Invalid dimensions for conv2d" << std::endl;
+            cerr << "Invalid dimensions for conv2d" << endl;
             exit(1);
         }
         int outx = (tensor1->dimx - tensor2->dimx + 2 * padding) / stride + 1;
@@ -870,7 +871,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
 
     void conv2d_multi_inplace(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, int stride, int padding) {
         if (tensor2->dimz != tensor1->dimz) {
-            std::cerr << "Invalid dimensions for conv2d" << std::endl;
+            cerr << "Invalid dimensions for conv2d" << endl;
             exit(1);
         }
         int outx = (tensor1->dimx - tensor2->dimx + 2 * padding) / stride + 1;
@@ -1093,7 +1094,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
             for (int j = 0; j < tensor->dimy; j++) {
                 for (int k = 0; k < tensor->dimz; k++) {
                     if (tensor_at(result, i, j, k) < -1 || tensor_at(result, i, j, k) > 1) {
-                        std::cerr << "Invalid input for asin" << std::endl;
+                        cerr << "Invalid input for asin" << endl;
                         exit(1);
                     }
                     tensor_at(result, i, j, k) = asin(tensor_at(result, i, j, k));
@@ -1107,7 +1108,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
             for (int j = 0; j < tensor->dimy; j++) {
                 for (int k = 0; k < tensor->dimz; k++) {
                     if (tensor_at(tensor, i, j, k) < -1 || tensor_at(tensor, i, j, k) > 1) {
-                        std::cerr << "Invalid input for asin" << std::endl;
+                        cerr << "Invalid input for asin" << endl;
                         exit(1);
                     }
                     tensor_at(tensor, i, j, k) = asin(tensor_at(tensor, i, j, k));
@@ -1122,7 +1123,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
             for (int j = 0; j < tensor->dimy; j++) {
                 for (int k = 0; k < tensor->dimz; k++) {
                     if (tensor_at(result, i, j, k) < -1 || tensor_at(result, i, j, k) > 1) {
-                        std::cerr << "Invalid input for acos" << std::endl;
+                        cerr << "Invalid input for acos" << endl;
                         exit(1);
                     }
                     tensor_at(result, i, j, k) = acos(tensor_at(result, i, j, k));
@@ -1136,7 +1137,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
             for (int j = 0; j < tensor->dimy; j++) {
                 for (int k = 0; k < tensor->dimz; k++) {
                     if (tensor_at(tensor, i, j, k) < -1 || tensor_at(tensor, i, j, k) > 1) {
-                        std::cerr << "Invalid input for acos" << std::endl;
+                        cerr << "Invalid input for acos" << endl;
                         exit(1);
                     }
                     tensor_at(tensor, i, j, k) = acos(tensor_at(tensor, i, j, k));
@@ -1214,7 +1215,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
             for (int j = 0; j < tensor->dimy; j++) {
                 for (int k = 0; k < tensor->dimz; k++) {
                     if (tensor_at(result, i, j, k) < 1) {
-                        std::cerr << "Invalid input for acosh" << std::endl;
+                        cerr << "Invalid input for acosh" << endl;
                         exit(1);
                     }
                     tensor_at(result, i, j, k) = acosh(tensor_at(result, i, j, k));
@@ -1228,7 +1229,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
             for (int j = 0; j < tensor->dimy; j++) {
                 for (int k = 0; k < tensor->dimz; k++) {
                     if (tensor_at(tensor, i, j, k) < 1) {
-                        std::cerr << "Invalid input for acosh" << std::endl;
+                        cerr << "Invalid input for acosh" << endl;
                         exit(1);
                     }
                     tensor_at(tensor, i, j, k) = acosh(tensor_at(tensor, i, j, k));
@@ -1243,7 +1244,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
             for (int j = 0; j < tensor->dimy; j++) {
                 for (int k = 0; k < tensor->dimz; k++) {
                     if (tensor_at(result, i, j, k) <= -1 || tensor_at(result, i, j, k) >= 1) {
-                        std::cerr << "Invalid input for atanh" << std::endl;
+                        cerr << "Invalid input for atanh" << endl;
                         exit(1);
                     }
                     tensor_at(result, i, j, k) = atanh(tensor_at(result, i, j, k));
@@ -1257,7 +1258,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
             for (int j = 0; j < tensor->dimy; j++) {
                 for (int k = 0; k < tensor->dimz; k++) {
                     if (tensor_at(tensor, i, j, k) <= -1 || tensor_at(tensor, i, j, k) >= 1) {
-                        std::cerr << "Invalid input for atanh" << std::endl;
+                        cerr << "Invalid input for atanh" << endl;
                         exit(1);
                     }
                     tensor_at(tensor, i, j, k) = atanh(tensor_at(tensor, i, j, k));
@@ -1274,7 +1275,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
             for (int j = 0; j < tensor->dimy; j++) {
                 for (int k = 0; k < tensor->dimz; k++) {
                     if (tensor_at(result, i, j, k) < 0) {
-                        std::cerr << "Invalid input for sqrt" << std::endl;
+                        cerr << "Invalid input for sqrt" << endl;
                         exit(1);
                     }
                     tensor_at(result, i, j, k) = sqrt(tensor_at(result, i, j, k));
@@ -1288,7 +1289,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
             for (int j = 0; j < tensor->dimy; j++) {
                 for (int k = 0; k < tensor->dimz; k++) {
                     if (tensor_at(tensor, i, j, k) < 0) {
-                        std::cerr << "Invalid input for sqrt" << std::endl;
+                        cerr << "Invalid input for sqrt" << endl;
                         exit(1);
                     }
                     tensor_at(tensor, i, j, k) = sqrt(tensor_at(tensor, i, j, k));
@@ -1338,7 +1339,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
         copy_multi(tensor, result);
         for (int i = 0; i < tensor->dimx * tensor->dimy * tensor->dimz; i++) {
             if (result->data[i] <= 0) {
-                std::cerr << "Invalid input for log" << std::endl;
+                cerr << "Invalid input for log" << endl;
                 exit(1);
             }
             result->data[i] = log(result->data[i]);
@@ -1348,7 +1349,7 @@ void concat_multi(struct Tensor_multi* tensor1, struct Tensor_multi* tensor2, in
     void log_multi_inplace(struct Tensor_multi* tensor) {
         for (int i = 0; i < tensor->dimx * tensor->dimy * tensor->dimz; i++) {
             if (tensor->data[i] <= 0) {
-                std::cerr << "Invalid input for log" << std::endl;
+                cerr << "Invalid input for log" << endl;
                 exit(1);
             }
             tensor->data[i] = log(tensor->data[i]);

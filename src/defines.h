@@ -2,9 +2,10 @@
 // these should be included in all files
 // 
 // define cuda functionality first if available
-#pragma once
-
 #define DEBUG 1
+
+#ifndef __CUDACC__
+#endif
 
 #if __CUDACC__ > 0
 #define CUDA_ENABLED 1

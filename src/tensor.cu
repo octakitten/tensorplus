@@ -1,12 +1,17 @@
+#pragma once
 #include "cuda.h"
 #include "cuda_runtime.h"
 #include <stdio.h>
 #include <math.h>
+#include <stdbool.h>
+#ifdef __cplusplus
+extern "C" {
+    #include "tensor.h"
+}
+#else
+    #include "tensor.h"
+#endif
 
-struct Tensor {
-    int size;
-    short* data;
-};
 
 __global__
 void vector_sort_tensor(struct Tensor* tensor, struct Tensor* vectors, struct Tensor* result) {
@@ -219,7 +224,7 @@ void set_tensor(struct Tensor* tensor, int index, short value) {
             }
         }
 
-        bool check_size(struct Tensor* tensor, struct Tensor* other) {
+         bool check_size(struct Tensor* tensor, struct Tensor* other) {
             if (tensor->size != other->size) {
                 printf("Error: size mismatch\n");
                 return false;
@@ -231,7 +236,7 @@ void set_tensor(struct Tensor* tensor, int index, short value) {
             return true;
         }
 
-        bool check_size(struct Tensor* tensor, struct Tensor* other, struct Tensor* result) {
+        extern "C" bool check_size_3(struct Tensor* tensor, struct Tensor* other, struct Tensor* result) {
             if (tensor->size != other->size || tensor->size != result->size) {
                 printf("Error: size mismatch\n");
                 return false;
@@ -244,7 +249,7 @@ void set_tensor(struct Tensor* tensor, int index, short value) {
         }
 
 extern "C" void vector_sort_tensor_wrapper(struct Tensor* tensor, struct Tensor* vectors, struct Tensor* result) {
-    if (!check_size(tensor, vectors, result)) {
+    if (!check_size_3(tensor, vectors, result)) {
         return;
     }
     cudaMalloc(&tensor, sizeof(&tensor));
@@ -295,7 +300,7 @@ extern "C" void fill_tensor_wrapper(struct Tensor* tensor, int value) {
 }
 
 extern "C" void add_tensor_wrapper(struct Tensor* tensor, struct Tensor* other, struct Tensor* result) {
-    if (!check_size(tensor, other, result)) {
+    if (!check_size_3(tensor, other, result)) {
         return;
     }
     cudaMalloc(&tensor, sizeof(&tensor));
@@ -319,7 +324,7 @@ extern "C" void add_tensor_wrapper(struct Tensor* tensor, struct Tensor* other, 
 }
 
 extern "C" void sub_tensor_wrapper(struct Tensor* tensor, struct Tensor* other, struct Tensor* result) {
-    if (!check_size(tensor, other, result)) {
+    if (!check_size_3(tensor, other, result)) {
         return;
     }
     cudaMalloc(&tensor, sizeof(&tensor));
@@ -343,7 +348,7 @@ if (tensor->size % 256 == 0) {
 }
 
 extern "C" void mul_tensor_wrapper(struct Tensor* tensor, struct Tensor* other, struct Tensor* result) {
-    if (!check_size(tensor, other, result)) {
+    if (!check_size_3(tensor, other, result)) {
         return;
     }
     cudaMalloc(&tensor, sizeof(&tensor));
@@ -367,7 +372,7 @@ if (tensor->size % 256 == 0) {
 }
 
 extern "C" void div_tensor_wrapper(struct Tensor* tensor, struct Tensor* other, struct Tensor* result) {
-    if (!check_size(tensor, other, result)) {
+    if (!check_size_3(tensor, other, result)) {
         return;
     }
     cudaMalloc(&tensor, sizeof(&tensor));
@@ -582,7 +587,7 @@ extern "C" void gradient_tensor_wrapper(struct Tensor* tensor, struct Tensor* re
 }
 
 extern "C" void gate_tensor_wrapper(struct Tensor* tensor, struct Tensor* booleans, struct Tensor* result) {
-    if (!check_size(tensor, booleans, result)) {
+    if (!check_size_3(tensor, booleans, result)) {
         return;
     }
     cudaMalloc(&tensor, sizeof(&tensor));
