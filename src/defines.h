@@ -2,7 +2,7 @@
 // these should be included in all files
 // 
 // define cuda functionality first if available
-#define DEBUG 1
+#define __DEBUG__ 1
 
 #ifndef __CUDACC__
 #endif
