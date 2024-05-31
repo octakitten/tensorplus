@@ -1,0 +1,3 @@
+include src/tensorplus/tensorplus.so
+include src/tensorplus/tensorplus.dll
+include src/tensorplus/tensorplus.dylib

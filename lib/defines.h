@@ -18,3 +18,6 @@
 #else 
 #define CUDA_MULTI 0
 #endif
+
+#define GPU 1
+#define CPU 0

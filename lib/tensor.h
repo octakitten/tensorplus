@@ -9,7 +9,11 @@ typedef struct {
     short* data;
 } Tensor;
 
-Tensor* create_tensor_wrapper(int size);
+Tensor* create_tensor(int size);
+void destroy_tensor(Tensor* tensor);
+void set_device_tensor(Tensor* tensor);
+Tensor* create_device_tensor(int size);
+void destroy_device_tensor();
 void zeros_tensor_wrapper( Tensor* tensor);
 void ones_tensor_wrapper( Tensor* tensor);
 void print_tensor_wrapper( Tensor* tensor);

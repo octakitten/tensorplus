@@ -7,8 +7,37 @@ static PyObject * create(PyObject * self, PyObject * args) {
     if (!PyArg_ParseTuple(args, "i", &size)) {
         return NULL;
     }
-    Tensor* tensor = create_tensor_wrapper(size);
+    Tensor* tensor = create_device_tensor(size);
     return PyCapsule_New(tensor, "Tensor", NULL);
+}
+
+static PyObject * destroy(PyObject * self, PyObject * args) {
+    PyObject * tensor_obj;
+    if (!PyArg_ParseTuple(args, "O", &tensor_obj)) {
+        return NULL;
+    }
+    Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
+    destroy_device_tensor(tensor);
+    return Py_BuildValue("");
+}
+
+static PyObject * create_ct(PyObject * self, PyObject * args) {
+    int size;
+    if (!PyArg_ParseTuple(args, "i", &size)) {
+        return NULL;
+    }
+    Tensor* tensor = create_tensor(size);
+    return PyCapsule_New(tensor, "Tensor", NULL);
+}
+
+static PyObject * destroy_ct(PyObject * self, PyObject * args) {
+    PyObject * tensor_obj;
+    if (!PyArg_ParseTuple(args, "O", &tensor_obj)) {
+        return NULL;
+    }
+    Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
+    destroy_tensor(tensor);
+    return Py_BuildValue("");
 }
 
 static PyObject * zeros(PyObject * self, PyObject * args) {
@@ -27,7 +56,6 @@ static PyObject * ones(PyObject * self, PyObject * args) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
-    ones_tensor_wrapper(tensor);
     return Py_BuildValue("");
 }
 
@@ -235,6 +263,7 @@ static PyObject * vector_sort(PyObject * self, PyObject * args) {
 
 static PyMethodDef tensorplus_methods[] = {
     {"create", create, METH_VARARGS, "Creates a tensor"},
+    {"destroy", destroy, METH_VARARGS, "Destroys a tensor"},
     {"zeros", zeros, METH_VARARGS, "Creates a tensor of zeros"},
     {"ones", ones, METH_VARARGS, "Creates a tensor of ones"},
     {"print", printtn, METH_VARARGS, "Prints the tensor"},
