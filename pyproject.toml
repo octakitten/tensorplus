@@ -11,4 +11,4 @@ repository = "https://github.com/octakitten/tensorplus"
 python = ">=3.12"
 
 [tool.poetry.dev-dependencies]
-pytest = ">=6.2"
+pytest = ">=7.4.3"
