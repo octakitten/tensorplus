@@ -31,7 +31,7 @@ void destroy_tensor(Tensor* tensor) {
     tensor = NULL;
 }
 
-void set_device_tensor(Tensor* tensor) {
+void set_cpu_to_device_tensor(Tensor* tensor) {
     Tensor* d_tensor;
     cudaMalloc((void **) &d_tensor->size, sizeof(int));
     cudaMemcpy(&d_tensor->size, &tensor->size, sizeof(int), cudaMemcpyHostToDevice);
@@ -41,6 +41,38 @@ void set_device_tensor(Tensor* tensor) {
     free(tensor->size);
     tensor = d_tensor;
     d_tensor = NULL;
+}
+
+void set_device_to_cpu_tensor(Tensor* tensor) {
+    Tensor* c_tensor = (Tensor*) malloc(sizeof(Tensor*));
+    c_tensor->size = (int*) malloc(sizeof(int));
+    cudaMemcpy(&c_tensor->size, &tensor->size, sizeof(int), cudaMemcpyDeviceToHost);
+    c_tensor->data = (short*) malloc(sizeof(short) * c_tensor->size[0]);
+    cudaMemcpy(&c_tensor->data, &tensor->data, sizeof(short) * c_tensor->size[0], cudaMemcpyDeviceToHost);
+    cudaFree(tensor->size);
+    cudaFree(tensor->data);
+    tensor = c_tensor;
+    c_tensor = NULL;
+}
+
+void copy_device_to_device_tensor(Tensor* tensor, Tensor* result) {
+    cudaMemcpy(&result->size, &tensor->size, sizeof(int), cudaMemcpyDeviceToDevice);
+    cudaMemcpy(&result->data, &tensor->data, sizeof(short) * tensor->size[0], cudaMemcpyDeviceToDevice);
+}
+
+void copy_device_to_cpu_tensor(Tensor* tensor, Tensor* result) {
+    cudaMemcpy(&result->size, &tensor->size, sizeof(int), cudaMemcpyDeviceToHost);
+    cudaMemcpy(&result->data, &tensor->data, sizeof(short) * tensor->size[0], cudaMemcpyDeviceToHost);
+}
+
+void copy_cpu_to_device_tensor(Tensor* tensor, Tensor* result) {
+    cudaMemcpy(&result->size, &tensor->size, sizeof(int), cudaMemcpyHostToDevice);
+    cudaMemcpy(&result->data, &tensor->data, sizeof(short) * tensor->size[0], cudaMemcpyHostToDevice);
+}
+
+void copy_cpu_to_cpu_tensor(Tensor* tensor, Tensor* result) {
+    memcpy(&result->size[0], &tensor->size[0], sizeof(int));
+    memcpy(&result->data, &tensor->data, sizeof(short) * tensor->size[0]);
 }
 
 Tensor* create_device_tensor(int size) {
@@ -77,7 +109,45 @@ void vector_sort_tensor(Tensor* tensor,  Tensor* vectors,  Tensor* result) {
     for (int i = index; i < tensor->size[0]; i+= stride) {
         result->data[i] = tensor->data[vectors->data[i]];
     }
+}
 
+__global__
+void vector_add_tensor(Tensor* tensor, Tensor* other, Tensor* vectors, Tensor* result) {
+    int index = threadIdx.x;
+    int stride = blockDim.x;
+    for (int i = 0; i < tensor->size[0]; i++) {
+        result->data[i] = tensor->data[i] + other->data[vectors->data[i]];
+    }
+}
+
+__global__
+void vector_sub_tensor(Tensor* tensor, Tensor* other, Tensor* vectors, Tensor* result) {
+    for (int i = 0; i < tensor->size[0]; i++) {
+        result->data[i] = tensor->data[i] - other->data[vectors->data[i]];
+    }
+}
+
+__global__
+void vector_mul_tensor(Tensor* tensor, Tensor* other, Tensor* vectors, Tensor* result) {
+    for (int i = 0; i < tensor->size[0]; i++) {
+        result->data[i] = tensor->data[i] * other->data[vectors->data[i]];
+    }
+}
+
+__global__
+void vector_div_tensor(Tensor* tensor, Tensor* other, Tensor* vectors, Tensor* result) {
+    for (int i = 0; i < tensor->size[0]; i++) {
+        result->data[i] = tensor->data[i] / other->data[vectors->data[i]];
+    }
+}
+
+__global__
+void vector_gate_tensor(Tensor* tensor, Tensor* booleans, Tensor* vectors, Tensor* result) {
+    for (int i = 0; i < tensor->size[0]; i++) {
+        if (booleans->data[i] == 1) {
+            result->data[i] = tensor->data[vectors->data[i]];
+        }
+    }
 }
 
 __global__
@@ -93,19 +163,13 @@ void set_tensor( Tensor* tensor, int index, short value) {
         void zeros_tensor( Tensor* tensor) {
 
             int index = threadIdx.x;
-            int stride = blockDim.x;
-            for (int i = index; i < tensor->size[0] - 1; i+= stride) {
-                tensor->data[i] = 0;
-            }
+            tensor->data[index] = 0;
         }
 
         __global__
         void ones_tensor( Tensor* tensor) {
             int index = threadIdx.x;
-            int stride = blockDim.x;
-            for (int i = index; i < tensor->size[0]; i+= stride) {
-                tensor->data[i] = 1;
-            }
+            tensor->data[index] = 1;
         }
 
         void rm_Tensor( Tensor* tensor) {
@@ -117,34 +181,19 @@ void set_tensor( Tensor* tensor, int index, short value) {
 
             int index = threadIdx.x;
             int stride = blockDim.x;
-            printf("%d\n", tensor->size[0]);
-            for (int i = index; i < tensor->size[0] - 1; i+= stride) {
-                printf("Printing from da GPU...\n");
-                printf("%hd ", tensor->data[i]);
-            }
-            printf("\n");
+            printf("Value at index: %d is %d\n", index, tensor->data[index]);
         }
 
         __global__
         void fill_tensor( Tensor* tensor, int value) {
             int index = threadIdx.x;
-            int stride = blockDim.x;
-            for (int i = index; i < tensor->size[0]; i+= stride) {
-                tensor->data[i] = value;
-            }
+            tensor->data[index] = value;
         }
 
         __global__
         void add_tensor( Tensor* tensor,  Tensor* other,  Tensor* result) {
             int index = threadIdx.x;
-            int stride = blockDim.x;
-            if (tensor->size[0] != other->size[0]) {
-                printf("Error: size mismatch\n");
-                return;
-            }
-            for (int i = index; i < tensor->size[0]; i+= stride) {
-                result->data[i] = tensor->data[i] + other->data[i];
-            }
+            result->data[index] = tensor->data[index], other->data[index];
         }
 
         __global__
@@ -316,30 +365,82 @@ void set_tensor( Tensor* tensor, int index, short value) {
             return true;
         }
 
+extern "C" void vector_add_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vectors,  Tensor* result) {
+    int size;
+    cudaMemcpy(&size, tensor->size, sizeof(int), cudaMemcpyDeviceToHost);
+    if (size < 256 == 0) {
+        vector_add_tensor<<<1, 256>>>(tensor, other, vectors, result);
+    } else if (size / 256 < 8) {
+        vector_add_tensor<<<(size / 256), 256>>>(tensor, other, vectors, result);
+    } else {
+        vector_add_tensor<<<7, 256>>>(tensor, other, vectors, result);
+    }
+    cudaDeviceSynchronize();
+}
+
+extern "C" void vector_sub_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vectors,  Tensor* result) {
+    int size;
+    cudaMemcpy(&size, tensor->size, sizeof(int), cudaMemcpyDeviceToHost);
+    if (size < 256 == 0) {
+        vector_sub_tensor<<<1, 256>>>(tensor, other, vectors, result);
+    } else if (size / 256 < 8) {
+        vector_sub_tensor<<<(size / 256), 256>>>(tensor, other, vectors, result);
+    } else {
+        vector_sub_tensor<<<7, 256>>>(tensor, other, vectors, result);
+    }
+    cudaDeviceSynchronize();
+}
+
+extern "C" void vector_mul_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vectors,  Tensor* result) {
+    int size;
+    cudaMemcpy(&size, tensor->size, sizeof(int), cudaMemcpyDeviceToHost);
+    if (size < 256 == 0) {
+        vector_mul_tensor<<<1, 256>>>(tensor, other, vectors, result);
+    } else if (size / 256 < 8) {
+        vector_mul_tensor<<<(size / 256), 256>>>(tensor, other, vectors, result);
+    } else {
+        vector_mul_tensor<<<7, 256>>>(tensor, other, vectors, result);
+    }
+    cudaDeviceSynchronize();
+}
+
+extern "C" void vector_div_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vectors,  Tensor* result) {
+    int size;
+    cudaMemcpy(&size, tensor->size, sizeof(int), cudaMemcpyDeviceToHost);
+    if (size < 256 == 0) {
+        vector_div_tensor<<<1, 256>>>(tensor, other, vectors, result);
+    } else if (size / 256 < 8) {
+        vector_div_tensor<<<(size / 256), 256>>>(tensor, other, vectors, result);
+    } else {
+        vector_div_tensor<<<7, 256>>>(tensor, other, vectors, result);
+    }
+    cudaDeviceSynchronize();
+}
+
+extern "C" void vector_gate_wrapper( Tensor* tensor,  Tensor* booleans,  Tensor* vectors,  Tensor* result) {
+    int size;
+    cudaMemcpy(&size, tensor->size, sizeof(int), cudaMemcpyDeviceToHost);
+    if (size < 256 == 0) {
+        vector_gate_tensor<<<1, 256>>>(tensor, booleans, vectors, result);
+    } else if (size / 256 < 8) {
+        vector_gate_tensor<<<(size / 256), 256>>>(tensor, booleans, vectors, result);
+    } else {
+        vector_gate_tensor<<<7, 256>>>(tensor, booleans, vectors, result);
+    }
+    cudaDeviceSynchronize();
+}
 
 extern "C" void zeros_tensor_wrapper( Tensor* tensor) {
     int size;
     cudaMemcpy(&size, tensor->size, sizeof(int), cudaMemcpyDeviceToHost);
-    if (size < 256 == 0) {
-        zeros_tensor<<<1, 256>>>(tensor);
-    } else if (size / 256 < 8) {
-        zeros_tensor<<<(size / 256), 256>>>(tensor);
-    } else {
-        zeros_tensor<<<7, 256>>>(tensor);
-    }
+    zeros_tensor<<<1,size>>>(tensor);
     cudaDeviceSynchronize();
 }
 
 extern "C" void ones_tensor_wrapper( Tensor* tensor) {
     int size;
     cudaMemcpy(&size, tensor->size, sizeof(int), cudaMemcpyDeviceToHost);
-    if (size < 256 == 0) {
-        ones_tensor<<<1, 256>>>(tensor);
-    } else if (size / 256 < 8) {
-        ones_tensor<<<(size / 256), 256>>>(tensor);
-    } else {
-        ones_tensor<<<7, 256>>>(tensor);
-    }
+    ones_tensor<<<1, size>>>(tensor);
     cudaDeviceSynchronize();
 }
 
@@ -358,16 +459,9 @@ extern "C" void vector_sort_tensor_wrapper( Tensor* tensor,  Tensor* vectors,  T
 }
 
 extern "C" void print_tensor_wrapper( Tensor* tensor) {
-    int size;
+     int size;
     cudaMemcpy(&size, tensor->size, sizeof(int), cudaMemcpyDeviceToHost);
-    if (size < 256 == 0) {
-        print_tensor<<<1, 256>>>(tensor);
-    } else if (size / 256 < 8) {
-        print_tensor<<<(size / 256), 256>>>(tensor);
-    } else {
-        print_tensor<<<7, 256>>>(tensor);
-    }
-    
+    print_tensor<<<1, size>>>(tensor);
     cudaDeviceSynchronize();
 }
 
@@ -385,16 +479,10 @@ extern "C" void fill_tensor_wrapper( Tensor* tensor, int value) {
     cudaFree(tensor);
 }
 
-extern "C" void add_tensor_wrapper( Tensor* tensor,  Tensor* vectors,  Tensor* result) {
+extern "C" void add_tensor_wrapper( Tensor* tensor,  Tensor* other,  Tensor* result) {
     int size;
     cudaMemcpy(&size, tensor->size, sizeof(int), cudaMemcpyDeviceToHost);
-    if (size / 256 == 0) {
-        add_tensor<<<1, 256>>>(tensor, vectors, result);
-    } else if (size / 256 < 8) {
-        add_tensor<<<(size / 256), 256>>>(tensor, vectors, result);
-    } else {
-        add_tensor<<<7, 256>>>(tensor, vectors, result);
-    }
+    add_tensor<<<1, size>>>(tensor, other, result);
     cudaDeviceSynchronize();
 }
 
@@ -465,6 +553,7 @@ extern "C" void sub_scalar_tensor_wrapper(Tensor* tensor, int value, Tensor* res
 
 extern "C" void mul_scalar_tensor_wrapper(Tensor* tensor, int value, Tensor* result) {
     int size;
+    cudaMemcpy(&size, tensor->size, sizeof(int), cudaMemcpyDeviceToHost);
     if (size / 256 == 0) {
         mul_scalar_tensor<<<1, 256>>>(tensor, value, result);
     } else if (size / 256 < 8) {

@@ -1,1 +1,1 @@
-import tensorplus
+from . import tensorplus

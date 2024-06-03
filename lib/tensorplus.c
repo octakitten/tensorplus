@@ -52,7 +52,7 @@ static PyObject * zeros(PyObject * self, PyObject * args) {
 
 static PyObject * ones(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    if (!PyArg_ParseTuple(args, "Oi", &tensor_obj)) {
+    if (!PyArg_ParseTuple(args, "O", &tensor_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
@@ -83,187 +83,284 @@ static PyObject * fill(PyObject * self, PyObject * args) {
 static PyObject * add(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     PyObject * other_obj;
-    if (!PyArg_ParseTuple(args, "OO", &tensor_obj, &other_obj)) {
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OOO", &tensor_obj, &other_obj, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
     Tensor* other = (Tensor*) PyCapsule_GetPointer(other_obj, "Tensor");
-    Tensor* result = (Tensor*) malloc(sizeof(Tensor*));
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj , "Tensor");
     add_tensor_wrapper(tensor, other, result);
-    return PyCapsule_New(result, "Tensor", NULL);
+    return Py_BuildValue("");
 }
 
 static PyObject * sub(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     PyObject * other_obj;
-    if (!PyArg_ParseTuple(args, "OO", &tensor_obj, &other_obj)) {
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OOO", &tensor_obj, &other_obj, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
     Tensor* other = (Tensor*) PyCapsule_GetPointer(other_obj, "Tensor");
-    Tensor* result = (Tensor*) malloc(sizeof(Tensor*));
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
     sub_tensor_wrapper(tensor, other, result);
-    return PyCapsule_New(result, "Tensor", NULL);
+    return Py_BuildValue("");
 }
 
 static PyObject * mul(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     PyObject * other_obj;
-    if (!PyArg_ParseTuple(args, "OO", &tensor_obj, &other_obj)) {
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OOO", &tensor_obj, &other_obj, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
     Tensor* other = (Tensor*) PyCapsule_GetPointer(other_obj, "Tensor");
-    Tensor* result = (Tensor*) malloc(sizeof(Tensor*));
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
     mul_tensor_wrapper(tensor, other, result);
-    return PyCapsule_New(result, "Tensor", NULL);
+    return Py_BuildValue("");
 }
 
 static PyObject * div_tn(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     PyObject * other_obj;
-    if (!PyArg_ParseTuple(args, "OO", &tensor_obj, &other_obj)) {
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OOO", &tensor_obj, &other_obj, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
     Tensor* other = (Tensor*) PyCapsule_GetPointer(other_obj, "Tensor");
-    Tensor* result = (Tensor*) malloc(sizeof(Tensor*));
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
     div_tensor_wrapper(tensor, other, result);
-    return PyCapsule_New(result, "Tensor", NULL);
+    return Py_BuildValue("");
 }
 
 static PyObject * add_scalar(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     int scalar;
-    if (!PyArg_ParseTuple(args, "Oi", &tensor_obj, &scalar)) {
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OiO", &tensor_obj, &scalar, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
     Tensor* result = (Tensor*) malloc(sizeof(Tensor*));
     add_scalar_tensor_wrapper(tensor, scalar, result);
-    return PyCapsule_New(result, "Tensor", NULL);
+    return Py_BuildValue("");
 }
 
 static PyObject * sub_scalar(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     int scalar;
-    if (!PyArg_ParseTuple(args, "Oi", &tensor_obj, &scalar)) {
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OiO", &tensor_obj, &scalar, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
-    Tensor* result = (Tensor*) malloc(sizeof(Tensor*));
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
     sub_scalar_tensor_wrapper(tensor, scalar, result);
-    return PyCapsule_New(result, "Tensor", NULL);
+    return Py_BuildValue("");
 }
 
 static PyObject * mul_scalar(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     int scalar;
-    if (!PyArg_ParseTuple(args, "Oi", &tensor_obj, &scalar)) {
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OiO", &tensor_obj, &scalar, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
-    Tensor* result = (Tensor*) malloc(sizeof(Tensor*));
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
     mul_scalar_tensor_wrapper(tensor, scalar, result);
-    return PyCapsule_New(result, "Tensor", NULL);
+    return Py_BuildValue("");
 }
 
 static PyObject * div_scalar(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     int scalar;
-    if (!PyArg_ParseTuple(args, "Oi", &tensor_obj, &scalar)) {
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OiO", &tensor_obj, &scalar, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
-    Tensor* result = (Tensor*) malloc(sizeof(Tensor*));
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
     div_scalar_tensor_wrapper(tensor, scalar, result);
-    return PyCapsule_New(result, "Tensor", NULL);
+    return Py_BuildValue("");
 }
 
 static PyObject * transpose(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    if (!PyArg_ParseTuple(args, "O", &tensor_obj)) {
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OO", &tensor_obj, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
     Tensor* result = (Tensor*) malloc(sizeof(Tensor*));
     transpose_tensor_wrapper(tensor, result);
-    return PyCapsule_New(result, "Tensor", NULL);
+    return Py_BuildValue("");
 }
 
 static PyObject * sum(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    if (!PyArg_ParseTuple(args, "O", &tensor_obj)) {
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OO", &tensor_obj, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
-    Tensor* result = (Tensor*) malloc(sizeof(Tensor*));
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
     sum_tensor_wrapper(tensor, result);
-    return PyCapsule_New(result, "Tensor", NULL);
+    return Py_BuildValue("");
 }
 
 static PyObject * max(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    if (!PyArg_ParseTuple(args, "O", &tensor_obj)) {
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OO", &tensor_obj, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
-    Tensor* result = (Tensor*) malloc(sizeof(Tensor*));
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
     max_tensor_wrapper(tensor, result);
-    return PyCapsule_New(result, "Tensor", NULL);
+    return Py_BuildValue("");
 }
 
 static PyObject * min(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    if (!PyArg_ParseTuple(args, "O", &tensor_obj)) {
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OO", &tensor_obj, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
-    Tensor* result = (Tensor*) malloc(sizeof(Tensor*));
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
     min_tensor_wrapper(tensor, result);
-    return PyCapsule_New(result, "Tensor", NULL);
+    return Py_BuildValue("");
 }
 
 static PyObject * gradient(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    if (!PyArg_ParseTuple(args, "O", &tensor_obj)) {
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OO", &tensor_obj, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
-    Tensor* result = (Tensor*) malloc(sizeof(Tensor*));
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
     gradient_tensor_wrapper(tensor, result);
-    return PyCapsule_New(result, "Tensor", NULL);
+    return Py_BuildValue("");
 }
 
 static PyObject * gate(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     PyObject * booleans_obj;
-    if (!PyArg_ParseTuple(args, "OO", &tensor_obj, &booleans_obj)) {
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OOO", &tensor_obj, &booleans_obj, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
     Tensor* booleans = (Tensor*) PyCapsule_GetPointer(booleans_obj, "Tensor");
-    Tensor* result = (Tensor*) malloc(sizeof(Tensor*));
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
     gate_tensor_wrapper(tensor, booleans, result);
-    return PyCapsule_New(result, "Tensor", NULL);
+    return Py_BuildValue("");
 }
 
 static PyObject * vector_sort(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     PyObject * vectors_obj;
-    if (!PyArg_ParseTuple(args, "OO", &tensor_obj, &vectors_obj)) {
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OOO", &tensor_obj, &vectors_obj, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
     Tensor* vectors = (Tensor*) PyCapsule_GetPointer(vectors_obj, "Tensor");
-    Tensor* result = (Tensor*) malloc(sizeof(Tensor*));
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
     vector_sort_tensor_wrapper(tensor, vectors, result);
-    return PyCapsule_New(result, "Tensor", NULL);
+    return Py_BuildValue("");
+}
+
+static PyObject * vector_add(PyObject * self, PyObject * args) {
+    PyObject * tensor_obj;
+    PyObject * other_obj;
+    PyObject * vectors_obj;
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OOO0", &tensor_obj, &other_obj, &vectors_obj, &result_obj)) {
+        return NULL;
+    }
+    Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
+    Tensor* other = (Tensor*) PyCapsule_GetPointer(other_obj, "Tensor");
+    Tensor* vectors = (Tensor*) PyCapsule_GetPointer(vectors_obj, "Tensor");
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
+    vector_add_wrapper(tensor, other, vectors, result);
+    return Py_BuildValue("");
+}
+
+static PyObject * vector_sub(PyObject * self, PyObject * args) {
+    PyObject * tensor_obj;
+    PyObject * other_obj;
+    PyObject * vectors_obj;
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OOOO", &tensor_obj, &other_obj, &vectors_obj, &result_obj)) {
+        return NULL;
+    }
+    Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
+    Tensor* other = (Tensor*) PyCapsule_GetPointer(other_obj, "Tensor");
+    Tensor* vectors = (Tensor*) PyCapsule_GetPointer(vectors_obj, "Tensor");
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
+    vector_sub_wrapper(tensor, other, vectors, result);
+    return Py_BuildValue("");
+}
+
+static PyObject * vector_mul(PyObject * self, PyObject * args) {
+    PyObject * tensor_obj;
+    PyObject * other_obj;
+    PyObject * vectors_obj;
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OOOO", &tensor_obj, &other_obj, &vectors_obj, &result_obj)) {
+        return NULL;
+    }
+    Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
+    Tensor* other = (Tensor*) PyCapsule_GetPointer(other_obj, "Tensor");
+    Tensor* vectors = (Tensor*) PyCapsule_GetPointer(vectors_obj, "Tensor");
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
+    vector_mul_wrapper(tensor, other, vectors, result);
+    return Py_BuildValue("");
+}
+
+static PyObject * vector_div(PyObject * self, PyObject * args) {
+    PyObject * tensor_obj;
+    PyObject * other_obj;
+    PyObject * vectors_obj;
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OOOO", &tensor_obj, &other_obj, &vectors_obj, &result_obj)) {
+        return NULL;
+    }
+    Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
+    Tensor* other = (Tensor*) PyCapsule_GetPointer(other_obj, "Tensor");
+    Tensor* vectors = (Tensor*) PyCapsule_GetPointer(vectors_obj, "Tensor");
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
+    vector_div_wrapper(tensor, other, vectors, result);
+    return Py_BuildValue("");
+}
+
+static PyObject * vector_gate(PyObject * self, PyObject * args) {
+    PyObject * tensor_obj;
+    PyObject * booleans_obj;
+    PyObject * vectors_obj;
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OOOO", &tensor_obj, &booleans_obj, &vectors_obj, &result_obj)) {
+        return NULL;
+    }
+    Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
+    Tensor* booleans = (Tensor*) PyCapsule_GetPointer(booleans_obj, "Tensor");
+    Tensor* vectors = (Tensor*) PyCapsule_GetPointer(vectors_obj, "Tensor");
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
+    vector_gate_wrapper(tensor, booleans, vectors, result);
+    return Py_BuildValue("");
 }
 
 static PyMethodDef tensorplus_methods[] = {
     {"create", create, METH_VARARGS, "Creates a tensor"},
     {"destroy", destroy, METH_VARARGS, "Destroys a tensor"},
+    {"create_ct", create_ct, METH_VARARGS, "Creates a cpu tensor"},
+    {"destroy_ct", destroy_ct, METH_VARARGS, "Destroys a cpu tensor"},
     {"zeros", zeros, METH_VARARGS, "Creates a tensor of zeros"},
     {"ones", ones, METH_VARARGS, "Creates a tensor of ones"},
     {"print", printtn, METH_VARARGS, "Prints the tensor"},
@@ -283,6 +380,11 @@ static PyMethodDef tensorplus_methods[] = {
     {"gradient", gradient, METH_VARARGS, "Computes the gradient of a tensor"},
     {"gate", gate, METH_VARARGS, "Gates a tensor based on a boolean tensor"},
     {"vector_sort", vector_sort, METH_VARARGS, "Sorts a tensor based on a vector tensor"},
+    {"vector_add", vector_add, METH_VARARGS, "Adds two tensors based on a vector tensor"},
+    {"vector_sub", vector_sub, METH_VARARGS, "Subtracts two tensors based on a vector tensor"},
+    {"vector_mul", vector_mul, METH_VARARGS, "Multiplies two tensors based on a vector tensor"},
+    {"vector_div", vector_div, METH_VARARGS, "Divides two tensors based on a vector tensor"},
+    {"vector_gate", vector_gate, METH_VARARGS, "Gates a tensor based on a boolean vector tensor"},
     {NULL, NULL, 0, NULL}
 };
 
