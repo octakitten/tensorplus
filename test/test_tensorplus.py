@@ -10,3 +10,5 @@ tp.zeros(result)
 
 tp.add(tensor, other, result)
 tp.print(result)
+tp.print(tensor)
+print(result)

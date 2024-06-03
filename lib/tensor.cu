@@ -16,7 +16,7 @@ extern "C" {
 #ifdef __DEBUG__
 #endif
 
-Tensor* create_tensor(int size) {
+extern "C" Tensor* create_tensor(int size) {
     Tensor *tensor = (Tensor*) malloc(sizeof(Tensor));
     tensor->size = (int*) malloc(sizeof(int));
     tensor->size = &size;
@@ -24,7 +24,7 @@ Tensor* create_tensor(int size) {
     return tensor;
 }
 
-void destroy_tensor(Tensor* tensor) {
+extern "C" void destroy_tensor(Tensor* tensor) {
     free(tensor->data);
     free(tensor->size);
     free(tensor);
@@ -75,7 +75,7 @@ void copy_cpu_to_cpu_tensor(Tensor* tensor, Tensor* result) {
     memcpy(&result->data, &tensor->data, sizeof(short) * tensor->size[0]);
 }
 
-Tensor* create_device_tensor(int size) {
+extern "C" Tensor* create_device_tensor(int size) {
     Tensor *tensor = (Tensor*) malloc(sizeof(Tensor));
     cudaMalloc((void **) &tensor->size, sizeof(int));
     cudaMemcpy(&tensor->size, &size, sizeof(int), cudaMemcpyHostToDevice);
@@ -83,13 +83,13 @@ Tensor* create_device_tensor(int size) {
     return tensor;
 }
 
-void destroy_device_tensor(Tensor* tensor) {
+extern "C" void destroy_device_tensor(Tensor* tensor) {
     cudaFree(&tensor->data);
     cudaFree(&tensor->size);
     tensor = NULL;
 }
 
-int init_tensor(Tensor* tensor, int size) {
+int init_cpu_tensor(Tensor* tensor, int size) {
     tensor->size = &size;
     tensor->data = (short*)malloc(size * sizeof(short));
     if (!tensor->data) {
@@ -100,10 +100,6 @@ int init_tensor(Tensor* tensor, int size) {
 
 __global__
 void vector_sort_tensor(Tensor* tensor,  Tensor* vectors,  Tensor* result) {
-    if (vectors->size[0] != tensor->size[0] || result->size[0] != tensor->size[0]) {
-        printf("Error: index out of bounds\n");
-        return; 
-    }
     int index = threadIdx.x;
     int stride = blockDim.x;
     for (int i = index; i < tensor->size[0]; i+= stride) {
@@ -115,35 +111,37 @@ __global__
 void vector_add_tensor(Tensor* tensor, Tensor* other, Tensor* vectors, Tensor* result) {
     int index = threadIdx.x;
     int stride = blockDim.x;
-    for (int i = 0; i < tensor->size[0]; i++) {
+    for (int i = index; i < tensor->size[0]; i+=stride) {
         result->data[i] = tensor->data[i] + other->data[vectors->data[i]];
     }
 }
 
 __global__
 void vector_sub_tensor(Tensor* tensor, Tensor* other, Tensor* vectors, Tensor* result) {
-    for (int i = 0; i < tensor->size[0]; i++) {
+    int index = threadIdx.x;
+    int stride = blockDim.x;
+    for (int i = index; i < tensor->size[0]; i+=stride) {
         result->data[i] = tensor->data[i] - other->data[vectors->data[i]];
     }
 }
 
 __global__
 void vector_mul_tensor(Tensor* tensor, Tensor* other, Tensor* vectors, Tensor* result) {
-    for (int i = 0; i < tensor->size[0]; i++) {
+    for (int i = threadIdx.x; i < tensor->size[0]; i+=blockDim.x) {
         result->data[i] = tensor->data[i] * other->data[vectors->data[i]];
     }
 }
 
 __global__
 void vector_div_tensor(Tensor* tensor, Tensor* other, Tensor* vectors, Tensor* result) {
-    for (int i = 0; i < tensor->size[0]; i++) {
+    for (int i = threadIdx.x; i < tensor->size[0]; i+= blockDim.x) {
         result->data[i] = tensor->data[i] / other->data[vectors->data[i]];
     }
 }
 
 __global__
 void vector_gate_tensor(Tensor* tensor, Tensor* booleans, Tensor* vectors, Tensor* result) {
-    for (int i = 0; i < tensor->size[0]; i++) {
+    for (int i = threadIdx.x; i < tensor->size[0]; i+= blockDim.x) {
         if (booleans->data[i] == 1) {
             result->data[i] = tensor->data[vectors->data[i]];
         }
@@ -163,47 +161,46 @@ void set_tensor( Tensor* tensor, int index, short value) {
         void zeros_tensor( Tensor* tensor) {
 
             int index = threadIdx.x;
-            tensor->data[index] = 0;
+            int stride = blockDim.x;
+            for (int i = index; i < tensor->size[0]; i+= stride) {
+                tensor->data[i] = 0;
+            }
         }
 
         __global__
         void ones_tensor( Tensor* tensor) {
             int index = threadIdx.x;
-            tensor->data[index] = 1;
-        }
-
-        void rm_Tensor( Tensor* tensor) {
-            cudaFree(&tensor->data);
+            int stride = blockDim.x;
+            for (int i = index; i < tensor->size[0]; i+= stride) {
+                tensor->data[i] = 1;
+            }
         }
 
         __global__
         void print_tensor( Tensor* tensor) {
 
             int index = threadIdx.x;
-            int stride = blockDim.x;
-            printf("Value at index: %d is %d\n", index, tensor->data[index]);
+            printf("Thread %d, value %d\n", threadIdx.x, tensor->data[threadIdx.x]);
         }
 
         __global__
         void fill_tensor( Tensor* tensor, int value) {
-            int index = threadIdx.x;
-            tensor->data[index] = value;
+            tensor->data[threadIdx.x] = value;
         }
 
         __global__
         void add_tensor( Tensor* tensor,  Tensor* other,  Tensor* result) {
             int index = threadIdx.x;
-            result->data[index] = tensor->data[index], other->data[index];
+            int stride = blockDim.x;
+            for (int i = index; i < tensor->size[0]; i+= stride) {
+                result->data[i] = tensor->data[i], other->data[i];
+            }
         }
 
         __global__
         void sub_tensor( Tensor* tensor,  Tensor* other,  Tensor* result) {
             int index = threadIdx.x;
             int stride = blockDim.x;
-            if (tensor->size[0] != other->size[0]) {
-                printf("Error: size mismatch\n");
-                return;
-            }
             for (int i = index; i < tensor->size[0]; i+= stride) {
                 result->data[i] = tensor->data[i] - other->data[i];
             }
@@ -213,10 +210,6 @@ void set_tensor( Tensor* tensor, int index, short value) {
         void mul_tensor( Tensor* tensor,  Tensor* other,  Tensor* result) {
             int index = threadIdx.x;
             int stride = blockDim.x;
-            if (tensor->size[0] != other->size[0]) {
-                printf("Error: size mismatch\n");
-                return;
-            }
             for (int i = index; i < tensor->size[0]; i+= stride) {
                 result->data[i] = tensor->data[i] * other->data[i];
             }
@@ -226,10 +219,6 @@ void set_tensor( Tensor* tensor, int index, short value) {
         void div_tensor( Tensor* tensor,  Tensor* other,  Tensor* result) {
             int index = threadIdx.x;
             int stride = blockDim.x;
-            if (tensor->size[0] != other->size[0]) {
-                printf("Error: size mismatch\n");
-                return;
-            }
             for (int i = index; i < tensor->size[0]; i+= stride) {
                 result->data[i] = tensor->data[i] / other->data[i];
             }
@@ -459,10 +448,21 @@ extern "C" void vector_sort_tensor_wrapper( Tensor* tensor,  Tensor* vectors,  T
 }
 
 extern "C" void print_tensor_wrapper( Tensor* tensor) {
-     int size;
-    cudaMemcpy(&size, tensor->size, sizeof(int), cudaMemcpyDeviceToHost);
-    print_tensor<<<1, size>>>(tensor);
-    cudaDeviceSynchronize();
+    int size = 0;
+    cudaError_t err = cudaMemcpy(&size, &tensor->size[0], sizeof(int), cudaMemcpyDeviceToHost);
+    printf("Error: %s\n", cudaGetErrorString(err));
+    printf("Tensor size: %d\n", size);
+    print_tensor<<<1, 4>>>(tensor);
+    err = cudaDeviceSynchronize();
+    printf("Error: %s\n", cudaGetErrorString(err));
+    short val = -1;
+    err = cudaMemcpy(&val, &tensor->data[0], sizeof(short), cudaMemcpyDeviceToHost);
+    printf("Error: %s\n", cudaGetErrorString(err));
+    printf("Value at index 0: %d\n", val);
+    int last = size - 1;
+    err = cudaMemcpy(&val, &tensor->data[last], sizeof(short), cudaMemcpyDeviceToHost);
+    printf("Value at last index: %d\n", val);
+    printf("Error: %s\n", cudaGetErrorString(err));
 }
 
 extern "C" void fill_tensor_wrapper( Tensor* tensor, int value) {

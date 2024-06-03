@@ -4,7 +4,7 @@ CXX = nvcc
 DEBUGFLAGS =
 FLAGS = -Iinclude -L/usr/local/cuda/lib64
 CFLAGS =
-CUDAFLAGS = -arch=sm_61 -Xcompiler '-fPIC'
+CUDAFLAGS = -arch sm_61 -Xcompiler '-fPIC'
 RELEASEFLAGS =
 LDFLAGS = -shared
 TARGETFLAGS = --output-directory $(TARGETDIR)

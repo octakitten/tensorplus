@@ -11,7 +11,6 @@ typedef struct {
 
 Tensor* create_tensor(int size);
 void destroy_tensor(Tensor* tensor);
-void set_device_tensor(Tensor* tensor);
 Tensor* create_device_tensor(int size);
 void destroy_device_tensor(Tensor* tensor);
 void zeros_tensor_wrapper( Tensor* tensor);
