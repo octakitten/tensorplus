@@ -3,8 +3,8 @@
 #include "includes.h"
 
 static PyObject * create(PyObject * self, PyObject * args) {
-    int size;
-    if (!PyArg_ParseTuple(args, "i", &size)) {
+    unsigned int size;
+    if (!PyArg_ParseTuple(args, "I", &size)) {
         return NULL;
     }
     Tensor* tensor = create_device_tensor(size);
@@ -22,8 +22,8 @@ static PyObject * destroy(PyObject * self, PyObject * args) {
 }
 
 static PyObject * create_ct(PyObject * self, PyObject * args) {
-    int size;
-    if (!PyArg_ParseTuple(args, "i", &size)) {
+    unsigned int size;
+    if (!PyArg_ParseTuple(args, "I", &size)) {
         return NULL;
     }
     Tensor* tensor = create_tensor(size);
@@ -56,6 +56,7 @@ static PyObject * ones(PyObject * self, PyObject * args) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
+    ones_tensor_wrapper(tensor);
     return Py_BuildValue("");
 }
 
@@ -71,8 +72,8 @@ static PyObject * printtn(PyObject * self, PyObject * args) {
 
 static PyObject * fill(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    int value;
-    if (!PyArg_ParseTuple(args, "Oi", &tensor_obj, &value)) {
+    short value;
+    if (!PyArg_ParseTuple(args, "Oh", &tensor_obj, &value)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
@@ -138,9 +139,9 @@ static PyObject * div_tn(PyObject * self, PyObject * args) {
 
 static PyObject * add_scalar(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    int scalar;
+    short scalar;
     PyObject * result_obj;
-    if (!PyArg_ParseTuple(args, "OiO", &tensor_obj, &scalar, &result_obj)) {
+    if (!PyArg_ParseTuple(args, "OhO", &tensor_obj, &scalar, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
@@ -151,9 +152,9 @@ static PyObject * add_scalar(PyObject * self, PyObject * args) {
 
 static PyObject * sub_scalar(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    int scalar;
+    short scalar;
     PyObject * result_obj;
-    if (!PyArg_ParseTuple(args, "OiO", &tensor_obj, &scalar, &result_obj)) {
+    if (!PyArg_ParseTuple(args, "OhO", &tensor_obj, &scalar, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
@@ -164,9 +165,9 @@ static PyObject * sub_scalar(PyObject * self, PyObject * args) {
 
 static PyObject * mul_scalar(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    int scalar;
+    short scalar;
     PyObject * result_obj;
-    if (!PyArg_ParseTuple(args, "OiO", &tensor_obj, &scalar, &result_obj)) {
+    if (!PyArg_ParseTuple(args, "OhO", &tensor_obj, &scalar, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
@@ -177,9 +178,9 @@ static PyObject * mul_scalar(PyObject * self, PyObject * args) {
 
 static PyObject * div_scalar(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    int scalar;
+    short scalar;
     PyObject * result_obj;
-    if (!PyArg_ParseTuple(args, "OiO", &tensor_obj, &scalar, &result_obj)) {
+    if (!PyArg_ParseTuple(args, "OhO", &tensor_obj, &scalar, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");

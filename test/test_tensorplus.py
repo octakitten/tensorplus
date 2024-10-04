@@ -1,14 +1,25 @@
 from tensorplus import tensorplus as tp
 
 tensor = tp.create(4)
+print(tensor)
 other = tp.create(4)
+print(other)
 result = tp.create(4)
+print(result)
 
 tp.zeros(tensor)
+print("zeros...")
 tp.ones(other)
-tp.zeros(result)
+print("ones...")
+tp.fill(result, 0)
+print("zeros again...")
 
 tp.add(tensor, other, result)
+print("adding")
 tp.print(result)
+print("printed results...")
 tp.print(tensor)
+print("printed tensor...")
+tp.print(other)
+print("printed other...")
 print(result)
