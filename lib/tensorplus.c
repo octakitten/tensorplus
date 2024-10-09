@@ -21,6 +21,30 @@ static PyObject * destroy(PyObject * self, PyObject * args) {
     return Py_BuildValue("");
 }
 
+static PyObject * copy(PyObject * self, PyObject * args) {
+    PyObject * tensor_obj;
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OO", &tensor_obj)) {
+        return NULL;
+    }
+    Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
+    copy_tensor(tensor, result);
+    return Py_BuildValue("");
+}
+
+static PyObject * clone_t(PyObject * self, PyObject * args) {
+    PyObject * tensor_obj;
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OO", &tensor_obj)) {
+        return NULL;
+    }
+    Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
+    clone_tensor(tensor, result);
+    return Py_BuildValue("");
+}
+
 static PyObject * create_ct(PyObject * self, PyObject * args) {
     unsigned int size;
     if (!PyArg_ParseTuple(args, "I", &size)) {
@@ -78,6 +102,30 @@ static PyObject * fill(PyObject * self, PyObject * args) {
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
     fill_tensor_wrapper(tensor, value);
+    return Py_BuildValue("");
+}
+
+static PyObject * set(PyObject * self, PyObject * args) {
+    PyObject * tensor_obj;
+    unsigned int index;
+    short value;
+    if (!PyArg_ParseTuple(args, "OIh", &tensor_obj, &value)) {
+        return NULL;
+    }
+    Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
+    set_tensor_wrapper(tensor, index, value);
+    return Py_BuildValue("");
+}
+
+static PyObject * get(PyObject * self, PyObject * args) {
+    PyObject * tensor_obj;
+    unsigned int index;
+    short value;
+    if (!PyArg_ParseTuple(args, "OIh", &tensor_obj, &value)) {
+        return NULL;
+    }
+    Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
+    value = get_tensor_value_wrapper(tensor, index);
     return Py_BuildValue("");
 }
 
@@ -282,7 +330,7 @@ static PyObject * vector_add(PyObject * self, PyObject * args) {
     PyObject * other_obj;
     PyObject * vectors_obj;
     PyObject * result_obj;
-    if (!PyArg_ParseTuple(args, "OOO0", &tensor_obj, &other_obj, &vectors_obj, &result_obj)) {
+    if (!PyArg_ParseTuple(args, "OOOO", &tensor_obj, &other_obj, &vectors_obj, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
@@ -357,15 +405,116 @@ static PyObject * vector_gate(PyObject * self, PyObject * args) {
     return Py_BuildValue("");
 }
 
+static PyObject * vector_resize(PyObject * self, PyObject * args) {
+    PyObject * tensor_obj;
+    PyObject * vectors_obj;
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OOO", &tensor_obj, &vectors_obj, &result_obj)) {
+        return NULL;
+    }
+    Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
+    Tensor* vectors = (Tensor*) PyCapsule_GetPointer(vectors_obj, "Tensor");
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
+    vector_resize_tensor_wrapper(tensor, vectors, result);
+    return Py_BuildValue("");
+}
+
+static PyObject * negate(PyObject * self, PyObject * args) {
+    PyObject * tensor_obj;
+    unsigned int scale_factor;
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OIO", &tensor_obj, &scale_factor, &result_obj)) {
+        return NULL;
+    }
+    Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
+    negate_tensor_wrapper(tensor, result);
+    return Py_BuildValue("");
+}
+
+
+
+static PyObject * enlarge(PyObject * self, PyObject * args) {
+    PyObject * tensor_obj;
+    unsigned int scale_factor;
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OIO", &tensor_obj, &scale_factor, &result_obj)) {
+        return NULL;
+    }
+    Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
+    tensor_enlarge_wrapper(tensor, scale_factor, result);
+    return Py_BuildValue("");
+}
+
+static PyObject * lesser(PyObject * self, PyObject * args) {
+    PyObject * tensor_obj;
+    PyObject * other_obj;
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OOO", &tensor_obj, &other_obj, &result_obj)) {
+        return NULL;
+    }
+    Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
+    Tensor* other = (Tensor*) PyCapsule_GetPointer(other_obj, "Tensor");
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
+    lesser_tensor_wrapper(tensor, other, result);
+    return Py_BuildValue("");
+}
+
+static PyObject * greater(PyObject * self, PyObject * args) {
+    PyObject * tensor_obj;
+    PyObject * other_obj;
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OOO", &tensor_obj, &other_obj, &result_obj)) {
+        return NULL;
+    }
+    Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
+    Tensor* other = (Tensor*) PyCapsule_GetPointer(other_obj, "Tensor");
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
+    greater_tensor_wrapper(tensor, other, result);
+    return Py_BuildValue("");
+}
+
+static PyObject * lesser_equals(PyObject * self, PyObject * args) {
+    PyObject * tensor_obj;
+    PyObject * other_obj;
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OOO", &tensor_obj, &other_obj, &result_obj)) {
+        return NULL;
+    }
+    Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
+    Tensor* other = (Tensor*) PyCapsule_GetPointer(other_obj, "Tensor");
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
+    lesser_equals_tensor_wrapper(tensor, other, result);
+    return Py_BuildValue("");
+}
+
+static PyObject * greater_equals(PyObject * self, PyObject * args) {
+    PyObject * tensor_obj;
+    PyObject * other_obj;
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OOO", &tensor_obj, &other_obj, &result_obj)) {
+        return NULL;
+    }
+    Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
+    Tensor* other = (Tensor*) PyCapsule_GetPointer(other_obj, "Tensor");
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
+    greater_equals_tensor_wrapper(tensor, other, result);
+    return Py_BuildValue("");
+}
+
 static PyMethodDef tensorplus_methods[] = {
     {"create", create, METH_VARARGS, "Creates a tensor"},
     {"destroy", destroy, METH_VARARGS, "Destroys a tensor"},
+    {"copy", copy, METH_VARARGS, "Copies a tensor by reference"},
+    {"clone_t", clone_t, METH_VARARGS, "Copies a tensor by value"},
     {"create_ct", create_ct, METH_VARARGS, "Creates a cpu tensor"},
     {"destroy_ct", destroy_ct, METH_VARARGS, "Destroys a cpu tensor"},
     {"zeros", zeros, METH_VARARGS, "Creates a tensor of zeros"},
     {"ones", ones, METH_VARARGS, "Creates a tensor of ones"},
     {"print", printtn, METH_VARARGS, "Prints the tensor"},
     {"fill", fill, METH_VARARGS, "Fills the tensor with a value"},
+    {"set", set, METH_VARARGS, "Sets an element of a tensor to a value"},
     {"add", add, METH_VARARGS, "Adds two tensors"},
     {"sub", sub, METH_VARARGS, "Subtracts two tensors"},
     {"mul", mul, METH_VARARGS, "Multiplies two tensors"},
@@ -386,6 +535,13 @@ static PyMethodDef tensorplus_methods[] = {
     {"vector_mul", vector_mul, METH_VARARGS, "Multiplies two tensors based on a vector tensor"},
     {"vector_div", vector_div, METH_VARARGS, "Divides two tensors based on a vector tensor"},
     {"vector_gate", vector_gate, METH_VARARGS, "Gates a tensor based on a boolean vector tensor"},
+    {"vector_resize", vector_resize, METH_VARARGS, "Enlarges a tensor and sets its values according to the vector."},
+    {"negate", negate, METH_VARARGS, "Returns true for zero values and false for nonzero values"},
+    {"enlarge", enlarge, METH_VARARGS, "Enlarges a tensor by a whole number scale factor"},
+    {"lesser", lesser, METH_VARARGS, "Returns true if source is less than other"},
+    {"greater", greater, METH_VARARGS, "Returns true if source is greater than other"},
+    {"lesser_equals", lesser_equals, METH_VARARGS, "Returns true if source is less than or equal to other"},
+    {"greater_equals", greater_equals, METH_VARARGS, "Returns true if source is greater than or equal to other"},
     {NULL, NULL, 0, NULL}
 };
 

@@ -48,6 +48,8 @@ __global__ void max_tensor(unsigned int* size, short* src, short* result);
 __global__ void min_tensor(unsigned int* size, short* src, short* result);
 __global__ void gradient_tensor(unsigned int* size, short* src, short* result);
 __global__ void gate_tensor(unsigned int* size, short* src, short* bools, short* result);
+bool check_if_cuda_tensor(Tensor* tensor);
+__global__ void negate_tensor(Tensor* tensor, Tensor* result);
 bool check_size( Tensor* tensor,  Tensor* other);
 int get_device_dim(unsigned int size);
 int get_device_dim_remainder(unsigned int size);
@@ -65,8 +67,8 @@ extern "C" Tensor* create_tensor(unsigned int size) {
 extern "C" void destroy_tensor(Tensor* tensor) {
     free(tensor->data);
     free(tensor->size);
-    free(tensor);
     tensor = NULL;
+    free(tensor);
 }
 
 void set_cpu_to_device_tensor(Tensor* tensor) {
@@ -79,6 +81,7 @@ void set_cpu_to_device_tensor(Tensor* tensor) {
     free(tensor->size);
     tensor = d_tensor;
     d_tensor = NULL;
+    free(d_tensor);
 }
 
 void set_device_to_cpu_tensor(Tensor* tensor) {
@@ -111,6 +114,36 @@ void copy_cpu_to_device_tensor(Tensor* tensor, Tensor* result) {
 void copy_cpu_to_cpu_tensor(Tensor* tensor, Tensor* result) {
     memcpy(&result->size, &tensor->size, sizeof(unsigned int));
     memcpy(&result->data, &tensor->data, sizeof(short) * tensor->size[0]);
+}
+
+extern "C" void clone_tensor(Tensor* tensor, Tensor* result) {
+  bool is_cuda1 = check_if_cuda_tensor(tensor);
+  bool is_cuda2 = check_if_cuda_tensor(result);
+  if (is_cuda1 && is_cuda2) {
+    copy_device_to_device_tensor(tensor, result);
+  } else if (!is_cuda1 && !is_cuda2) {
+    copy_cpu_to_cpu_tensor(tensor, result);
+  } else if (is_cuda1 && !is_cuda2) {
+    copy_device_to_cpu_tensor(tensor, result);
+  } else if (!is_cuda1 && is_cuda2) {
+    copy_cpu_to_device_tensor(tensor, result);
+  }
+}
+
+extern "C" void copy_tensor(Tensor* tensor, Tensor* result) {
+  result = tensor;
+}
+
+bool check_if_cuda_tensor(Tensor* tensor) {
+  cudaPointerAttributes attributes;
+  cudaPointerGetAttributes(&attributes, tensor->size);
+  if (attributes.type == cudaMemoryTypeHost) {
+    return false;
+  } else if (attributes.type == cudaMemoryTypeDevice) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 extern "C" Tensor* create_device_tensor(unsigned int size) {
@@ -207,7 +240,11 @@ void set_tensor(unsigned int* size, short* src, unsigned int* index, short* valu
         return;
     }
     src[index[0]] = value[0];
-}       
+}
+
+__global__ void get_tensor_value(short* src, unsigned int* index, short* result) {
+    result[0] = src[index[0]];
+}
 
         
         
@@ -385,6 +422,51 @@ void set_tensor(unsigned int* size, short* src, unsigned int* index, short* valu
             }
         }
 
+        __global__ void lesser_tensor(unsigned int* size, short* src, short* other, short* result) {
+            unsigned int index = threadIdx.x;
+            if (index < size[0]) {
+                if (src[index] < other[index]) {
+                    result[index] = 1;
+                } else {
+                    result[index] = 0;
+                }
+            }
+        }
+
+        __global__ void greater_tensor(unsigned int* size, short* src, short* other, short* result) {
+            unsigned int index = threadIdx.x;
+            if (index < size[0]) {
+                if (src[index] > other[index]) {
+                    result[index] = 1;
+                } else {
+                    result[index] = 0;
+                }
+            }
+        }
+
+
+        __global__ void lesser_equals_tensor(unsigned int* size, short* src, short* other, short* result) {
+            unsigned int index = threadIdx.x;
+            if (index <= size[0]) {
+                if (src[index] < other[index]) {
+                    result[index] = 1;
+                } else {
+                    result[index] = 0;
+                }
+            }
+        }
+
+        __global__ void greater_equals_tensor(unsigned int* size, short* src, short* other, short* result) {
+            unsigned int index = threadIdx.x;
+            if (index >= size[0]) {
+                if (src[index] < other[index]) {
+                    result[index] = 1;
+                } else {
+                    result[index] = 0;
+                }
+            }
+        }
+
         bool check_size( Tensor* tensor,  Tensor* other) {
             if (tensor->size[0] != other->size[0]) {
                 //printf("Error: size mismatch\n");
@@ -416,7 +498,51 @@ void set_tensor(unsigned int* size, short* src, unsigned int* index, short* valu
         int get_device_dim_remainder(unsigned int size) {
             return (size - 256*(size/256));
         }
+
+        __global__ void vector_resize_tensor(unsigned int* size_small, unsigned int* size_large, short* src, short* vectors, short* result) {
+            unsigned int index = threadIdx.x;
+            if (index < size_large[0]) {
+                result[index] = src[vectors[index]];
+            }
+        }
+
+        __global__ void tensor_enlarge(unsigned int* size_small, unsigned int* size_large, unsigned int* scale_factor, short* src, short* result) {
+            unsigned int index = threadIdx.x;
+            if (index < size_large[0]) {
+                result[index] = src[int(index/scale_factor[0])];
+            }
+        }
+
+        __global__ void bilinear_interpolate_tensor_enlarge(unsigned int* size_small, unsigned int* dims_small, unsigned int* size_large, unsigned int* dims_large, double* scale_factor, double* sqrt2, short* src, short* result) {
+            unsigned int index = threadIdx.x;
+            if (index < size_large[0]) {
+
+            }
+        }
         
+__global__ void negate_tensor(unsigned int* size, short* data, short* result) {
+  if (threadIdx.x < size[0]) {
+    if (data[threadIdx.x] == 0) {
+      result[threadIdx.x] = 0;
+    } else {
+      result[threadIdx.x] = 1;
+    }
+  }
+}
+
+extern "C" void negate_tensor_wrapper(Tensor* tensor, Tensor* result) {
+    unsigned int* size = (unsigned int*) malloc(sizeof(unsigned int));
+    cudaMemcpy(size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
+    if (size[0] < 256 == 0) {
+        negate_tensor<<<1, size[0]>>>(tensor->size, tensor->data, result->data);
+    } else if (size[0] / 256 < 7) {
+        negate_tensor<<<get_device_dim(size[0]), 256>>>(tensor->size, tensor->data, result->data);
+    } else {
+        negate_tensor<<<7, 256>>>(tensor->size, tensor->data, result->data);
+    }
+    cudaDeviceSynchronize();
+    free(size);
+}
 
 extern "C" void vector_add_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vectors,  Tensor* result) {
     unsigned int* size = (unsigned int*) malloc(sizeof(unsigned int));
@@ -429,6 +555,7 @@ extern "C" void vector_add_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vec
         vector_add_tensor<<<7, 256>>>(tensor->size, tensor->data, other->data, vectors->data, result->data);
     }
     cudaDeviceSynchronize();
+    free(size);
 }
 
 extern "C" void vector_sub_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vectors,  Tensor* result) {
@@ -566,6 +693,52 @@ extern "C" void fill_tensor_wrapper( Tensor* tensor, short value) {
     }
     err = cudaDeviceSynchronize();
     //printf("Error: %s\n", cudaGetErrorString(err));
+    cudaFree(device_value);
+}
+
+extern "C" void set_tensor_wrapper( Tensor* tensor, unsigned int index, short value) {
+    unsigned int size = 0;
+    cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
+    unsigned int* device_index = NULL;
+    cudaMalloc((void**) &device_index, sizeof(unsigned int));
+    cudaMemcpy(device_index, &index, sizeof(unsigned int), cudaMemcpyHostToDevice);
+    short* device_value = NULL;
+    cudaMalloc((void**) &device_value, sizeof(short));
+    cudaMemcpy(device_value, &value, sizeof(short), cudaMemcpyHostToDevice);
+
+    if (size < 256) {
+        set_tensor<<<1, size>>>(tensor->size, tensor->data, device_index, device_value);
+        //printf("Size is less than 256.\n");
+    } else if (size / 256 < 7) {
+        set_tensor<<<get_device_dim(size), 256>>>(tensor->size, tensor->data, device_index, device_value);
+    } else {
+        set_tensor<<<7, 256>>>(tensor->size, tensor->data, device_index, device_value);
+    }
+    cudaDeviceSynchronize();
+    cudaFree(device_index);
+    cudaFree(device_value);
+}
+
+extern "C" short get_tensor_value_wrapper( Tensor* tensor, unsigned int index) {
+    unsigned int size = 0;
+    cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
+    unsigned int* device_index = NULL;
+    cudaMalloc((void**) &device_index, sizeof(unsigned int));
+    cudaMemcpy(device_index, &index, sizeof(unsigned int), cudaMemcpyHostToDevice);
+    short* host_value = (short*) malloc(sizeof(short));
+    short* device_value = NULL;
+    cudaMalloc((void**) device_value, sizeof(short));
+    if (index < size) {
+        get_tensor_value<<<1, size>>>(tensor->data, device_index, device_value);
+    }
+    cudaMemcpy(host_value, device_value, sizeof(short), cudaMemcpyDeviceToHost);
+    cudaDeviceSynchronize();
+    cudaFree(device_value);
+    cudaFree(device_index);
+    short return_value = host_value[0];
+    host_value = NULL;
+    free(host_value);
+    return return_value;
 }
 
 extern "C" void add_tensor_wrapper( Tensor* tensor,  Tensor* other,  Tensor* result) {
@@ -596,7 +769,7 @@ extern "C" void sub_tensor_wrapper( Tensor* tensor,  Tensor* other,  Tensor* res
     unsigned int size = 0;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / 256 == 0) {
-          sub_tensor<<<1, 256>>>(tensor->size, tensor->data, other->data, result->data);
+          sub_tensor<<<1, size>>>(tensor->size, tensor->data, other->data, result->data);
      } else if (size / 256 < 7) {
           sub_tensor<<<get_device_dim(size), 256>>>(tensor->size, tensor->data, other->data, result->data);
      } else {
@@ -609,7 +782,7 @@ extern "C" void mul_tensor_wrapper( Tensor* tensor,  Tensor* other,  Tensor* res
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / 256 == 0) {
-          mul_tensor<<<1, 256>>>(tensor->size, tensor->data, other->data, result->data);
+          mul_tensor<<<1, size>>>(tensor->size, tensor->data, other->data, result->data);
      } else if (size / 256 < 7) {
           mul_tensor<<<get_device_dim(size), 256>>>(tensor->size, tensor->data, other->data, result->data);
      } else {
@@ -622,7 +795,7 @@ extern "C" void div_tensor_wrapper( Tensor* tensor,  Tensor* other,  Tensor* res
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / 256 == 0) {
-          div_tensor<<<1, 256>>>(tensor->size, tensor->data, other->data, result->data);
+          div_tensor<<<1, size>>>(tensor->size, tensor->data, other->data, result->data);
      } else if (size / 256 < 8) {
           div_tensor<<<(size / 256), 256>>>(tensor->size, tensor->data, other->data, result->data);
      } else {
@@ -638,7 +811,7 @@ extern "C" void add_scalar_tensor_wrapper(Tensor* tensor, short value, Tensor* r
     cudaMalloc((void**) device_value, sizeof(short));
     cudaMemcpy(&device_value, &value, sizeof(short), cudaMemcpyHostToDevice);
     if (size / 256 == 0) {
-        add_scalar_tensor<<<1, 256>>>(tensor->size, tensor->data, device_value, result->data);
+        add_scalar_tensor<<<1, size>>>(tensor->size, tensor->data, device_value, result->data);
     } else if (size / 256 < 7) {
         add_scalar_tensor<<<get_device_dim(size), 256>>>(tensor->size, tensor->data, device_value, result->data);
     } else {
@@ -654,7 +827,7 @@ extern "C" void sub_scalar_tensor_wrapper(Tensor* tensor, short value, Tensor* r
     cudaMalloc((void**) device_value, sizeof(short));
     cudaMemcpy(&device_value, &value, sizeof(short), cudaMemcpyHostToDevice);
     if (size / 256 == 0) {
-        sub_scalar_tensor<<<1, 256>>>(tensor->size, tensor->data, device_value, result->data);
+        sub_scalar_tensor<<<1, size>>>(tensor->size, tensor->data, device_value, result->data);
     } else if (size / 256 < 7) {
         sub_scalar_tensor<<<get_device_dim(size), 256>>>(tensor->size, tensor->data, device_value, result->data);
     } else {
@@ -670,7 +843,7 @@ extern "C" void mul_scalar_tensor_wrapper(Tensor* tensor, short value, Tensor* r
     cudaMalloc((void**) device_value, sizeof(short));
     cudaMemcpy(&device_value, &value, sizeof(short), cudaMemcpyHostToDevice);
     if (size / 256 == 0) {
-        mul_scalar_tensor<<<1, 256>>>(tensor->size, tensor->data, device_value, result->data);
+        mul_scalar_tensor<<<1, size>>>(tensor->size, tensor->data, device_value, result->data);
     } else if (size / 256 < 7) {
         mul_scalar_tensor<<<get_device_dim(size), 256>>>(tensor->size, tensor->data, device_value, result->data);
     } else {
@@ -686,7 +859,7 @@ extern "C" void div_scalar_tensor_wrapper(Tensor* tensor, short scalar, Tensor* 
     cudaMalloc((void**) device_value, sizeof(short));
     cudaMemcpy(&device_value, &scalar, sizeof(short), cudaMemcpyHostToDevice);
     if (size / 256 == 0) {
-        div_scalar_tensor<<<1, 256>>>(tensor->size, tensor->data, device_value, result->data);
+        div_scalar_tensor<<<1, size>>>(tensor->size, tensor->data, device_value, result->data);
     } else if (size / 256 < 7) {
         div_scalar_tensor<<<get_device_dim(size), 256>>>(tensor->size, tensor->data, device_value, result->data);
     } else {
@@ -699,7 +872,7 @@ extern "C" void transpose_tensor_wrapper(Tensor* tensor, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / 256 == 0) {
-        transpose_tensor<<<1, 256>>>(tensor->size, tensor->data, result->data);
+        transpose_tensor<<<1, size>>>(tensor->size, tensor->data, result->data);
     } else if (size / 256 < 7) {
         transpose_tensor<<<get_device_dim(size), 256>>>(tensor->size, tensor->data, result->data);
     } else {
@@ -712,7 +885,7 @@ extern "C" void sum_tensor_wrapper(Tensor* tensor, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / 256 == 0) {
-        sum_tensor<<<1, 256>>>(tensor->size, tensor->data, result->data);
+        sum_tensor<<<1, size>>>(tensor->size, tensor->data, result->data);
     } else if (size / 256 < 7) {
         sum_tensor<<<get_device_dim(size), 256>>>(tensor->size, tensor->data, result->data);
     } else {
@@ -725,7 +898,7 @@ extern "C" void mean_tensor_wrapper(Tensor* tensor, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / 256 == 0) {
-        mean_tensor<<<1, 256>>>(tensor->size, tensor->data, result->data);
+        mean_tensor<<<1, size>>>(tensor->size, tensor->data, result->data);
     } else if (size / 256 < 7) {
         mean_tensor<<<get_device_dim(size), 256>>>(tensor->size, tensor->data, result->data);
     } else {
@@ -738,7 +911,7 @@ extern "C" void max_tensor_wrapper(Tensor* tensor, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / 256 == 0) {
-        max_tensor<<<1, 256>>>(tensor->size, tensor->data, result->data);
+        max_tensor<<<1, size>>>(tensor->size, tensor->data, result->data);
     } else if (size / 256 < 7) {
         max_tensor<<<get_device_dim(size), 256>>>(tensor->size, tensor->data, result->data);
     } else {
@@ -750,7 +923,7 @@ extern "C" void min_tensor_wrapper(Tensor* tensor, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / 256 == 0) {
-        min_tensor<<<1, 256>>>(tensor->size, tensor->data, result->data);
+        min_tensor<<<1, size>>>(tensor->size, tensor->data, result->data);
     } else if (size / 256 < 7) {
         min_tensor<<<get_device_dim(size), 256>>>(tensor->size, tensor->data, result->data);
     } else {
@@ -762,7 +935,7 @@ extern "C" void gradient_tensor_wrapper(Tensor* tensor, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / 256 == 0) {
-        gradient_tensor<<<1, 256>>>(tensor->size, tensor->data, result->data);
+        gradient_tensor<<<1, size>>>(tensor->size, tensor->data, result->data);
     } else if (size / 256 < 7) {
         gradient_tensor<<<get_device_dim(size), 256>>>(tensor->size, tensor->data, result->data);
     } else {
@@ -774,10 +947,85 @@ extern "C" void gate_tensor_wrapper(Tensor* tensor, Tensor* booleans, Tensor* re
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / 256 == 0) {
-        gate_tensor<<<1, 256>>>(tensor->size, tensor->data, booleans->data, result->data);
+        gate_tensor<<<1, size>>>(tensor->size, tensor->data, booleans->data, result->data);
     } else if (size / 256 < 7) {
         gate_tensor<<<get_device_dim(size), 256>>>(tensor->size, tensor->data, booleans->data, result->data);
     } else {
         gate_tensor<<<7, 256>>>(tensor->size, tensor->data, booleans->data, result->data);
+    }
+}
+
+extern "C" void vector_resize_tensor_wrapper(Tensor* tensor, Tensor* vectors, Tensor* result) {
+    unsigned int size;
+    cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
+    if (size / 256 == 0) {
+        vector_resize_tensor<<<1, size>>>(tensor->size, result->size, tensor->data, vectors->data, result->data);
+    } else if (size / 256 < 7) {
+        vector_resize_tensor<<<get_device_dim(size), 256>>>(tensor->size, result->size, tensor->data, vectors->data, result->data);
+    } else {
+        vector_resize_tensor<<<7, 256>>>(tensor->size, result->size, tensor->data, vectors->data, result->data);
+    }
+}
+
+extern "C" void tensor_enlarge_wrapper(Tensor* tensor, unsigned int scale_factor, Tensor* result) {
+    unsigned int size;
+    cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
+    unsigned int* device_scale = NULL;
+    cudaMalloc((void**) device_scale, sizeof(unsigned int));
+    cudaMemcpy(device_scale, &scale_factor, sizeof(unsigned int), cudaMemcpyHostToDevice);
+    if (size / 256 == 0) {
+        tensor_enlarge<<<1, size>>>(tensor->size, result->size, device_scale, tensor->data, result->data);
+    } else if (size / 256 < 7) {
+        tensor_enlarge<<<get_device_dim(size), 256>>>(tensor->size, result->size, device_scale, tensor->data, result->data);
+    } else {
+        tensor_enlarge<<<7, 256>>>(tensor->size, result->size, device_scale, tensor->data, result->data);
+    }
+}
+
+extern "C" void lesser_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* result) {
+    unsigned int size;
+    cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
+    if (size / 256 == 0) {
+        lesser_tensor<<<1, size>>>(tensor->size, tensor->data, other->data, result->data);
+    } else if (size / 256 < 7) {
+        lesser_tensor<<<get_device_dim(size), 256>>>(tensor->size, tensor->data, other->data, result->data);
+    } else {
+        lesser_tensor<<<7, 256>>>(tensor->size, tensor->data, other->data, result->data);
+    }
+}
+
+extern "C" void greater_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* result) {
+    unsigned int size;
+    cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
+    if (size / 256 == 0) {
+        greater_tensor<<<1, size>>>(tensor->size, tensor->data, other->data, result->data);
+    } else if (size / 256 < 7) {
+        greater_tensor<<<get_device_dim(size), 256>>>(tensor->size, tensor->data, other->data, result->data);
+    } else {
+        greater_tensor<<<7, 256>>>(tensor->size, tensor->data, other->data, result->data);
+    }
+}
+
+extern "C" void lesser_equals_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* result) {
+    unsigned int size;
+    cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
+    if (size / 256 == 0) {
+        lesser_equals_tensor<<<1, size>>>(tensor->size, tensor->data, other->data, result->data);
+    } else if (size / 256 < 7) {
+        lesser_equals_tensor<<<get_device_dim(size), 256>>>(tensor->size, tensor->data, other->data, result->data);
+    } else {
+        lesser_equals_tensor<<<7, 256>>>(tensor->size, tensor->data, other->data, result->data);
+    }
+}
+
+extern "C" void greater_equals_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* result) {
+    unsigned int size;
+    cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
+    if (size / 256 == 0) {
+        greater_equals_tensor<<<1, size>>>(tensor->size, tensor->data, other->data, result->data);
+    } else if (size / 256 < 7) {
+        greater_equals_tensor<<<get_device_dim(size), 256>>>(tensor->size, tensor->data, other->data, result->data);
+    } else {
+        greater_equals_tensor<<<7, 256>>>(tensor->size, tensor->data, other->data, result->data);
     }
 }
