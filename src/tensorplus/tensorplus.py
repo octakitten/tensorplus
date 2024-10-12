@@ -5,13 +5,28 @@ def create(size):
 
 def destroy(tensor):
     tensorplus.destroy(tensor)
+
+def size(tensor, size):
+    tensorplus.size(tensor, size)
     
 def create_ct(size):
     return tensorplus.create_ct(size)
 
 def destroy_ct(tensor):
     tensorplus.destroy_ct(tensor)
+
+def set(tensor, index, value):
+    tensorplus.set(tensor, index, value)
     
+def get(tensor, index, value):
+    tensorplus.get(tensor, index, value)
+
+def copy(tensor, result):
+    tensorplus.copy(tensor, result)
+
+def clone_t(tensor, result):
+    tensorplus.clone_t(tensor, result)
+
 def zeros(tensor):
     tensorplus.zeros(tensor)
     
@@ -80,3 +95,24 @@ def vector_div(tensor, other, vectors, result):
 
 def vector_gate(tensor, booleans, vectors, result):
     tensorplus.vector_gate(tensor, booleans, vectors, result)
+
+def vector_resize(tensor, vectors, result):
+    tensorplus.vector_resize(tensor, vectors, result)
+
+def enlarge(tensor, scale_factor, result):
+    tensorplus.enlarge(tensor, scale_factor, result)
+
+def negate(tensor, result):
+    tensorplus.negate(tensor, result)
+
+def lesser(tensor, other, result):
+    tensorplus.lesser(tensor, other, result)
+
+def greater(tensor, other, result):
+    tensorplus.greater(tensor, other, result)
+
+def lesser_equals(tensor, other, result):
+    tensorplus.lesser_equals(tensor, other, result)
+
+def greater_equals(tensor, other, result):
+    tensorplus.greater_equals(tensor, other, result)

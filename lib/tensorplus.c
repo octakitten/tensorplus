@@ -21,6 +21,18 @@ static PyObject * destroy(PyObject * self, PyObject * args) {
     return Py_BuildValue("");
 }
 
+static PyObject * size(PyObject * self, PyObject * args) {
+    PyObject * tensor_obj;
+    unsigned int size;
+    if (!PyArg_ParseTuple(args, "OI", &tensor_obj, &size)) {
+        return NULL;
+    }
+    Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
+    get_tensor_size_wrapper(tensor, size);
+    return Py_BuildValue("");
+}
+
+
 static PyObject * copy(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     PyObject * result_obj;
@@ -109,7 +121,7 @@ static PyObject * set(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     unsigned int index;
     short value;
-    if (!PyArg_ParseTuple(args, "OIh", &tensor_obj, &value)) {
+    if (!PyArg_ParseTuple(args, "OIh", &tensor_obj, &index, &value)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
@@ -121,11 +133,11 @@ static PyObject * get(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     unsigned int index;
     short value;
-    if (!PyArg_ParseTuple(args, "OIh", &tensor_obj, &value)) {
+    if (!PyArg_ParseTuple(args, "OIh", &tensor_obj, &index, &value)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
-    value = get_tensor_value_wrapper(tensor, index);
+    get_tensor_value_wrapper(tensor, index, value);
     return Py_BuildValue("");
 }
 
@@ -421,9 +433,8 @@ static PyObject * vector_resize(PyObject * self, PyObject * args) {
 
 static PyObject * negate(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    unsigned int scale_factor;
     PyObject * result_obj;
-    if (!PyArg_ParseTuple(args, "OIO", &tensor_obj, &scale_factor, &result_obj)) {
+    if (!PyArg_ParseTuple(args, "OO", &tensor_obj, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
@@ -431,8 +442,6 @@ static PyObject * negate(PyObject * self, PyObject * args) {
     negate_tensor_wrapper(tensor, result);
     return Py_BuildValue("");
 }
-
-
 
 static PyObject * enlarge(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
@@ -506,6 +515,7 @@ static PyObject * greater_equals(PyObject * self, PyObject * args) {
 static PyMethodDef tensorplus_methods[] = {
     {"create", create, METH_VARARGS, "Creates a tensor"},
     {"destroy", destroy, METH_VARARGS, "Destroys a tensor"},
+    {"size", size, METH_VARARGS, "Gets a tensors size"},
     {"copy", copy, METH_VARARGS, "Copies a tensor by reference"},
     {"clone_t", clone_t, METH_VARARGS, "Copies a tensor by value"},
     {"create_ct", create_ct, METH_VARARGS, "Creates a cpu tensor"},
@@ -515,6 +525,7 @@ static PyMethodDef tensorplus_methods[] = {
     {"print", printtn, METH_VARARGS, "Prints the tensor"},
     {"fill", fill, METH_VARARGS, "Fills the tensor with a value"},
     {"set", set, METH_VARARGS, "Sets an element of a tensor to a value"},
+    {"get", get, METH_VARARGS, "Gets the value at an index"},
     {"add", add, METH_VARARGS, "Adds two tensors"},
     {"sub", sub, METH_VARARGS, "Subtracts two tensors"},
     {"mul", mul, METH_VARARGS, "Multiplies two tensors"},

@@ -18,6 +18,7 @@ extern "C" {
 
 void set_cpu_to_device_tensor(Tensor* tensor);
 void set_device_to_cpu_tensor(Tensor* tensor);
+void get_tensor_size_wrapper(Tensor* tensor, unsigned int size);
 void copy_device_to_device_tensor(Tensor* tensor, Tensor* result);
 void copy_device_to_cpu_tensor(Tensor* tensor, Tensor* result);
 void copy_cpu_to_device_tensor(Tensor* tensor, Tensor* result);
@@ -69,6 +70,12 @@ extern "C" void destroy_tensor(Tensor* tensor) {
     free(tensor->size);
     tensor = NULL;
     free(tensor);
+}
+
+extern "C" void get_tensor_size_wrapper(Tensor* tensor, unsigned int size) {
+    cudaError_t err = cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
+    cudaDeviceSynchronize();
+    printf("Printing the size from get_tensor_size_wrapper() function: %d\n", size);
 }
 
 void set_cpu_to_device_tensor(Tensor* tensor) {
@@ -234,26 +241,23 @@ void vector_gate_tensor(unsigned int* size, short* src, short* booleans, short* 
 
 __global__
 void set_tensor(unsigned int* size, short* src, unsigned int* index, short* value) {
-
-    if (index[0] > size[0]) {
-        //printf("Error: index out of bounds\n");
-        return;
+    if (index[0] < size[0]) {
+        src[index[0]] = value[0];
     }
-    src[index[0]] = value[0];
 }
 
 __global__ void get_tensor_value(short* src, unsigned int* index, short* result) {
     result[0] = src[index[0]];
+    printf("Value gotten from within the kernel: %d\n", src[index[0]]);
 }
 
         
         
         __global__ void zeros_tensor( unsigned int* size, short* data) {
             unsigned int index = threadIdx.x;
-            short value = 0;
             //printf("Printing from within zeros tensor kernel! Index: %d\n", index);
             if (index < size[0]) {
-                data[index] = value;
+                data[index] = 0;
                 //printf("setting to %d\n", value);
             }
         }
@@ -261,10 +265,9 @@ __global__ void get_tensor_value(short* src, unsigned int* index, short* result)
         __global__
         void ones_tensor( unsigned int* size, short* data) {
             unsigned int index = threadIdx.x;
-            short value = 1;
             //printf("printing from within ones tensor kernel!\n");
             if (index < size[0]) {
-                data[index] = value;
+                data[index] = 1;
                 //printf("setting to %d\n", value);
             }
         }
@@ -559,7 +562,7 @@ extern "C" void vector_add_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vec
 }
 
 extern "C" void vector_sub_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vectors,  Tensor* result) {
-    unsigned int size;
+    unsigned int size = 0;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size < 256 == 0) {
         vector_sub_tensor<<<1, size>>>(tensor->size, tensor->data, other->data, vectors->data, result->data);
@@ -572,7 +575,7 @@ extern "C" void vector_sub_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vec
 }
 
 extern "C" void vector_mul_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vectors,  Tensor* result) {
-    unsigned int size;
+    unsigned int size = 0;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size < 256 == 0) {
         vector_mul_tensor<<<1, size>>>(tensor->size, tensor->data, other->data, vectors->data, result->data);
@@ -585,7 +588,7 @@ extern "C" void vector_mul_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vec
 }
 
 extern "C" void vector_div_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vectors,  Tensor* result) {
-    unsigned int size;
+    unsigned int size = 0;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size < 256 == 0) {
         vector_div_tensor<<<1, size>>>(tensor->size, tensor->data, other->data, vectors->data, result->data);
@@ -598,7 +601,7 @@ extern "C" void vector_div_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vec
 }
 
 extern "C" void vector_gate_wrapper( Tensor* tensor,  Tensor* booleans,  Tensor* vectors,  Tensor* result) {
-    unsigned int size;
+    unsigned int size = 0;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size < 256 == 0) {
         vector_gate_tensor<<<1, size>>>(tensor->size, tensor->data, booleans->data, vectors->data, result->data);
@@ -614,22 +617,22 @@ extern "C" void zeros_tensor_wrapper( Tensor* tensor) {
     unsigned int size = 0;
     
     cudaError_t err = cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
-    //printf("Error: %s\n", cudaGetErrorString(err));
-    //printf("%d\n", size);
+    printf("Error: %s\n", cudaGetErrorString(err));
+    printf("%d\n", size);
     if (size < 256) {
         zeros_tensor<<<1, size>>>(tensor->size, tensor->data);
-        //printf("Ran the zeros tensor kernel!\n");
+        printf("Ran the zeros tensor kernel!\n");
     } else if (size / 256 < 7) {
         zeros_tensor<<<get_device_dim(size), 256>>>(tensor->size, tensor->data);
     } else {
         zeros_tensor<<<7, 256>>>(tensor->size, tensor->data);
     }
     err = cudaDeviceSynchronize();
-    //printf("Error: %s\n", cudaGetErrorString(err));
+    printf("Error: %s\n", cudaGetErrorString(err));
 }
 
 extern "C" void ones_tensor_wrapper( Tensor* tensor) {
-    unsigned int size;
+    unsigned int size = 0;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     //printf("Size: %d\n", size);
     if (size < 256) {
@@ -643,7 +646,7 @@ extern "C" void ones_tensor_wrapper( Tensor* tensor) {
 }
 
 extern "C" void vector_sort_tensor_wrapper( Tensor* tensor,  Tensor* vectors,  Tensor* result)  {
-    unsigned int size;
+    unsigned int size = 0;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
 
    if (size < 256) {
@@ -676,7 +679,7 @@ extern "C" void fill_tensor_wrapper( Tensor* tensor, short value) {
     unsigned int size = 0;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     //printf("Size: %d\n", size);
-    short* device_value = NULL;
+    short* device_value;
     cudaMalloc((void**) &device_value, sizeof(short));
     cudaMemcpy(device_value, &value, sizeof(short), cudaMemcpyHostToDevice);
     cudaError_t err = cudaDeviceSynchronize();
@@ -697,48 +700,73 @@ extern "C" void fill_tensor_wrapper( Tensor* tensor, short value) {
 }
 
 extern "C" void set_tensor_wrapper( Tensor* tensor, unsigned int index, short value) {
+    //printf("Retrieving size...");
     unsigned int size = 0;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
-    unsigned int* device_index = NULL;
+    //printf("Setting device index...");
+    unsigned int* device_index;
     cudaMalloc((void**) &device_index, sizeof(unsigned int));
     cudaMemcpy(device_index, &index, sizeof(unsigned int), cudaMemcpyHostToDevice);
-    short* device_value = NULL;
+    //printf("Setting device value...");
+    short* device_value;
     cudaMalloc((void**) &device_value, sizeof(short));
     cudaMemcpy(device_value, &value, sizeof(short), cudaMemcpyHostToDevice);
-
-    if (size < 256) {
-        set_tensor<<<1, size>>>(tensor->size, tensor->data, device_index, device_value);
-        //printf("Size is less than 256.\n");
-    } else if (size / 256 < 7) {
-        set_tensor<<<get_device_dim(size), 256>>>(tensor->size, tensor->data, device_index, device_value);
-    } else {
-        set_tensor<<<7, 256>>>(tensor->size, tensor->data, device_index, device_value);
+    
+    //printf("Calling device function...");
+    if (index < size) {
+      set_tensor<<<1, 1>>>(tensor->size, tensor->data, device_index, device_value);
     }
+
+    //printf("Calling cuda synchronize...");
     cudaDeviceSynchronize();
+    //printf("Freeing unused device memory...");
     cudaFree(device_index);
     cudaFree(device_value);
 }
 
-extern "C" short get_tensor_value_wrapper( Tensor* tensor, unsigned int index) {
+extern "C" void get_tensor_value_wrapper( Tensor* tensor, unsigned int index, short value) {
+    cudaError_t err = cudaGetLastError();
+    printf("Get_tensor_value_wrapper function...\n");
+    printf("Getting size...\n");
     unsigned int size = 0;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
+    err = cudaGetLastError();
+    printf("Error: %s\n", cudaGetErrorString(err));
+    printf("Setting device index...\n");
     unsigned int* device_index = NULL;
-    cudaMalloc((void**) &device_index, sizeof(unsigned int));
+    cudaMalloc((void**) device_index, sizeof(unsigned int));
+    err = cudaGetLastError();
+    printf("Error: %s\n", cudaGetErrorString(err));
     cudaMemcpy(device_index, &index, sizeof(unsigned int), cudaMemcpyHostToDevice);
-    short* host_value = (short*) malloc(sizeof(short));
+    err = cudaGetLastError();
+    printf("Error: %s\n", cudaGetErrorString(err));
+    printf("Setting device_value...\n");
     short* device_value = NULL;
     cudaMalloc((void**) device_value, sizeof(short));
+    err = cudaGetLastError();
+    printf("Error: %s\n", cudaGetErrorString(err));
     if (index < size) {
-        get_tensor_value<<<1, size>>>(tensor->data, device_index, device_value);
+        get_tensor_value<<<1, 1>>>(tensor->data, device_index, device_value);
     }
-    cudaMemcpy(host_value, device_value, sizeof(short), cudaMemcpyDeviceToHost);
+    err = cudaGetLastError();
+    printf("Error: %s\n", cudaGetErrorString(err));
     cudaDeviceSynchronize();
+    err = cudaGetLastError();
+    printf("Error: %s\n", cudaGetErrorString(err));
+    printf("Setting host value...\n");
+    short host_value = 0;
+    cudaMemcpy(&host_value, device_value, sizeof(short), cudaMemcpyDeviceToHost);
+    err = cudaGetLastError();
+    printf("Error: %s\n", cudaGetErrorString(err));
+    printf("Freeing pointers...\n");
     cudaFree(device_value);
     cudaFree(device_index);
-    short return_value = host_value[0];
-    host_value = NULL;
-    free(host_value);
-    return return_value;
+    err = cudaGetLastError();
+    printf("Error: %s\n", cudaGetErrorString(err));
+    printf("Returning value: %d\n", host_value);
+    value = host_value;
+    err = cudaGetLastError();
+    printf("Error: %s\n", cudaGetErrorString(err));
 }
 
 extern "C" void add_tensor_wrapper( Tensor* tensor,  Tensor* other,  Tensor* result) {
