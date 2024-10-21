@@ -1,3 +1,6 @@
 /.vscode
 *.lock
 result
+*.o
+*.out
+*.obj

@@ -3,37 +3,30 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    tensorplus.url = "github:octakitten/tensorplus";
   };
 
-  outputs = { self, nixpkgs }: {
-    packages."x86_64-linux" = let
-      pkgs = import nixpkgs {
-        system = "x86_64-linux";
-        config = {
-          allowUnfree = true;
-          allowUnfreePredicate = _: true;
+  outputs = { self, nixpkgs, tensorplus }@inputs: 
+  let 
+    supportedSystems = [
+      "x86_64-linux"
+    ];
+    forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
+    nixpkgsFor = forAllSystems (system: nixpkgs.legacyPackages.${system});
+  in
+  {
+    packages = forAllSystems (system: {
+      config = {
+        allowUnfree = true;
+        allowUnfreePredicate = _: true;
+        nvidia.acceptLicense = true;
+        hardware.nvidia = {
+          enable = true;
+          driver = "nvidia";
         };
+        hardware.opengl.enable = true;
       };
-      in {
-        default = pkgs.stdenv.mkDerivation {
-        name = "tensorplus";
-        src = ./.;
-        
-        nativeBuildInputs = [
-          pkgs.python312Full
-        ];
-
-        buildInputs = [
-          pkgs.poetry
-          pkgs.git
-          pkgs.gh
-          pkgs.gnumake
-          pkgs.gcc11
-          pkgs.cudaPackages.cudatoolkit
-        ];
-
-        dontUseCmakeConfigure = true;
-      };
-    };
+      tensorplus = nixpkgsFor.${system}.callPackage inputs.tensorplus {};
+    });
   };
 }

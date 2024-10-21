@@ -690,7 +690,7 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
         }
 
         __global__ void vector_resize_tensor(unsigned int* size_small, unsigned int* size_large, short* src, short* vectors, short* result) {
-            extern __shared__ short tmp[THREADS_PER_BLOCK];
+            extern __shared__ short tmp[];
             unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
             unsigned int block_index = threadIdx.x;
             if (index < size_large[0]) {
@@ -699,7 +699,7 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
         }
 
         __global__ void tensor_enlarge(unsigned int* size_small, unsigned int* size_large, unsigned int* scale_factor, short* src, short* result) {
-            extern __shared__ short tmp[THREADS_PER_BLOCK];
+            extern __shared__ short tmp[];
             unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
             unsigned int block_index = threadIdx.x;
             if (index < size_large[0]) {
@@ -708,7 +708,7 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
         }
 
         __global__ void bilinear_interpolate_tensor_enlarge(unsigned int* size_small, unsigned int* dims_small, unsigned int* size_large, unsigned int* dims_large, double* scale_factor, double* sqrt2, short* src, short* result) {
-            extern __shared__ short tmp[THREADS_PER_BLOCK];
+            extern __shared__ short tmp[];
             unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
             unsigned int block_index = threadIdx.x;
             if (index < size_large[0]) {
@@ -717,7 +717,7 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
         }
         
 __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
-  extern __shared__ short tmp[THREADS_PER_BLOCK];
+  extern __shared__ short tmp[];
   unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
   unsigned int block_index = threadIdx.x;
   if (threadIdx.x < size[0]) {
