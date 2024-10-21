@@ -116,3 +116,6 @@ def lesser_equals(tensor, other, result):
 
 def greater_equals(tensor, other, result):
     tensorplus.greater_equals(tensor, other, result)
+
+def equals(tensor, other, result):
+    tensorplus.equals(tensor, other, result)
