@@ -512,6 +512,20 @@ static PyObject * greater_equals(PyObject * self, PyObject * args) {
     return Py_BuildValue("");
 }
 
+static PyObject * equals(PyObject * self, PyObject * args) {
+    PyObject * tensor_obj;
+    PyObject * other_obj;
+    PyObject * result_obj;
+    if (!PyArg_ParseTuple(args, "OOO", &tensor_obj, &other_obj, &result_obj)) {
+        return NULL;
+    }
+    Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
+    Tensor* other = (Tensor*) PyCapsule_GetPointer(other_obj, "Tensor");
+    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
+    equals_tensor_wrapper(tensor, other, result);
+    return Py_BuildValue("");
+}
+
 static PyMethodDef tensorplus_methods[] = {
     {"create", create, METH_VARARGS, "Creates a tensor"},
     {"destroy", destroy, METH_VARARGS, "Destroys a tensor"},
@@ -553,6 +567,7 @@ static PyMethodDef tensorplus_methods[] = {
     {"greater", greater, METH_VARARGS, "Returns true if source is greater than other"},
     {"lesser_equals", lesser_equals, METH_VARARGS, "Returns true if source is less than or equal to other"},
     {"greater_equals", greater_equals, METH_VARARGS, "Returns true if source is greater than or equal to other"},
+    {"equals", equals, METH_VARARGS, "Returns true if source is equal to other"},
     {NULL, NULL, 0, NULL}
 };
 
