@@ -26,7 +26,7 @@
         };
         hardware.opengl.enable = true;
       };
-      tensorplus = nixpkgsFor.${system}.callPackage inputs.tensorplus {};
+      default = nixpkgsFor.${system}.callPackage inputs.tensorplus {};
     });
   };
 }

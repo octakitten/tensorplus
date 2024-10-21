@@ -1,5 +1,5 @@
 {
-    pkgs.stdenv.mkDerivation {
+    default = pkgs.stdenv.mkDerivation {
         name = "tensorplus";
         src = ./.;
         buildInputs = [
