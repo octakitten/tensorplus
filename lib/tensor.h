@@ -48,6 +48,7 @@ void lesser_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* result);
 void greater_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* result);
 void lesser_equals_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* result);
 void greater_equals_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* result);
+void equals_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* result);
 void copy_tensor(Tensor* tensor, Tensor* result);
 void clone_tensor(Tensor* tensor, Tensor* result);
 void negate_tensor_wrapper(Tensor* tensor, Tensor* result);
