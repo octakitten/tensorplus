@@ -1,5 +1,5 @@
 {
-  description = "Tensorplus Nix Package";
+  description = "Tensorplus Nix Dev Environment Package";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
@@ -14,9 +14,9 @@
           allowUnfreePredicate = _: true;
         };
       };
-    in {
-      default = pkgs.stdenv.mkDerivation {
-        name = "Tensorplus";
+      in {
+        default = pkgs.stdenv.mkDerivation {
+        name = "tensorplus";
         src = ./.;
         
         nativeBuildInputs = [
@@ -28,7 +28,7 @@
           pkgs.git
           pkgs.gh
           pkgs.gnumake
-          pkgs.libgcc
+          pkgs.gcc11
           pkgs.cudaPackages.cudatoolkit
         ];
 

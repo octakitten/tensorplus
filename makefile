@@ -1,10 +1,10 @@
 SHELL = /bin/bash
-CC = gcc
+CC = gcc11
 CXX = nvcc
 DEBUGFLAGS =
-FLAGS = -Iinclude -L/usr/local/cuda/lib64
-CFLAGS =
-CUDAFLAGS = -arch sm_61 -Xcompiler '-fPIC'
+FLAGS = -Iinclude -I/opt/cuda/include -L/opt/cuda/lib64
+CFLAGS = -std=c++20
+CUDAFLAGS = -arch sm_61 -Xcompiler '-fPIC' --std=c++20
 RELEASEFLAGS =
 LDFLAGS = -shared
 TARGETFLAGS = --output-directory $(TARGETDIR)
@@ -26,6 +26,7 @@ TARGETDIR = src/tensorplus/
 SOURCEDIR = lib/
 BUILDDIR = build/
 OBJDIR = objects/
+MAKEDIRS = mkdir -p 
 
 all: $(TARGETDIR)$(TARGET) $(TARGETDIR)$(TARGETMAC) $(TARGETDIR)$(TARGETWIN)
 
