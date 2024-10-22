@@ -3,10 +3,9 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-    tensorplus.url = "github:octakitten/tensorplus";
   };
 
-  outputs = { self, nixpkgs, tensorplus }@inputs: 
+  outputs = { self, nixpkgs }@inputs: 
   let 
     supportedSystems = [
       "x86_64-linux"
@@ -26,7 +25,7 @@
         };
         hardware.opengl.enable = true;
       };
-      default = nixpkgsFor.${system}.callPackage inputs.tensorplus {};
+      default = nixpkgsFor.${system}.callPackage ./default.nix;
     });
   };
 }

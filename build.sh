@@ -1,7 +1,7 @@
-cd nix
-nix build --impure
-nix-shell
-cd ..
+#!/bin/bash
+#nix build --impure
+#nix-shell --impure
+mv -f tensorplus.so src/tensorplus/tensorplus.so
+mv -f tensorplus.dylib src/tensorplus/tensorplus.dylib
+mv -f tensorplus.dll src/tensorplus/tensorplus.dll
 poetry build
-source ./.venv/bin/activate
-pip install dist/*.whl --force-reinstall
