@@ -7,6 +7,18 @@
 
   outputs = { self, nixpkgs }@inputs: 
   let 
+    nixpkgs-conf = import nixpkgs {
+      overlays = [
+        (self: super: {
+          config.allowUnfree = true;
+          config.allowUnfreePredicate = _: true;
+          config.nvidia.acceptLicense = true;
+          config.hardware.nvidia.enable = true;
+          config.hardware.nvidia.driver = "nvidia";
+          config.hardware.opengl.enable = true;
+        })
+      ];
+    };
     supportedSystems = [
       "x86_64-linux"
     ];
@@ -15,15 +27,8 @@
   in
   {
     packages = forAllSystems (system: {
-      config = {
-        allowUnfree = true;
-        allowUnfreePredicate = _: true;
-        nvidia.acceptLicense = true;
-        hardware.nvidia = {
-          enable = true;
-          driver = "nvidia";
-        };
-        hardware.opengl.enable = true;
+      devShell = with nixpkgsFor.${system}; mkShell {
+
       };
       default = 
         with nixpkgsFor.${system};
@@ -40,16 +45,20 @@
             installPhase = ''
               mkdir -p $out/bin
               cp -r * $out/bin
+              echo $(gcc --version)
+              echo $(nvcc --version)
             '';
 
-            buildInputs = [
+            nativeBuildInputs = [
               python312Packages.python
-              gcc11
               gnumake
-              cudatoolkit
+              gcc11
+              libcxx
+              cudaPackages.cudatoolkit
               linuxPackages.nvidia_x11
+              poetry
+              bash
             ];
-
             dontUseCmakeConfigure = true;
 
             meta = {
