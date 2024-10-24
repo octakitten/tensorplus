@@ -1,5 +1,5 @@
 #!/bin/bash
-#nix shell --impure
-source ./.venv/bin/activate
-pip install dist/*.whl --force-reinstall
-python3 test/test_tensorplus.py
+nix develop --impure --command 'source ./.venv/bin/activate'
+nix develop --impure --command 'pip install dist/*.whl --force-reinstall'
+nix develop --impure --command 'python3 test/test_tensorplus.py'
+

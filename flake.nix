@@ -3,70 +3,91 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+      #nvidia.acceptLicense = true;
+      #hardware.nvidia.enable = true;
+      #hardware.nvidia.driver = "nvidia";
+      #hardware.opengl.enable = true;
+    poetry2nix.url = "github:nix-community/poetry2nix";
+
   };
 
-  outputs = { self, nixpkgs }@inputs: 
+  outputs = { self, nixpkgs, poetry2nix }@inputs: 
   let 
-    nixpkgs-conf = import nixpkgs {
+    pkgs = nixpkgs;
+
+    inherit (poetry2nix.lib.mkPoetry2Nix { inherit pkgs; }) mkPoetryEnv;
+
+    nixpkgs-unfree = import pkgs {
       overlays = [
+        poetry2nix.overlay
         (self: super: {
-          config.allowUnfree = true;
-          config.allowUnfreePredicate = _: true;
-          config.nvidia.acceptLicense = true;
-          config.hardware.nvidia.enable = true;
-          config.hardware.nvidia.driver = "nvidia";
-          config.hardware.opengl.enable = true;
-        })
+            nvidia = super.nvidia.override {
+              acceptLicense = true;
+            };
+            config = super.config.override {
+              allowUnfree = true;
+            };
+         })
       ];
     };
+
     supportedSystems = [
       "x86_64-linux"
     ];
+
+
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
+    
     nixpkgsFor = forAllSystems (system: nixpkgs.legacyPackages.${system});
+
+
   in
   {
     packages = forAllSystems (system: {
-      devShell = with nixpkgsFor.${system}; mkShell {
 
+      #poetry-env = with nixpkgsFor.${system}; mkPoetryEnv {
+      #  projectDir = ./.;
+      #  python = python312;
+      #};
+
+
+      devShell = with nixpkgsFor.${system}; mkShell {
+        
+        nativeBuildInputs = [ 
+          #poetry-env
+          gnumake
+          gcc11
+          gcc11Stdenv
+          cudaPackages.cudatoolkit
+          cudaPackages.cuda_nvcc
+          linuxPackages.nvidia_x11
+          bash
+        ];
+
+        shellHook = ''
+          export $EXTRA_CUDA_FLAGS="-I${cudaPackages.cudatoolkit}/include" -L${cudaPackages.cudatoolkit}/lib64"
+          export NIXPLGS_ALLOW_UNFREE=1
+        '';
       };
+      
       default = 
         with nixpkgsFor.${system};
-          stdenv.mkDerivation {
-            name = "tensorplus";
-            src = ./.;
+        stdenv.mkDerivation {
+          name = "tensorplus";
+          src = ./.;
+          version = "0.0.2b01";
+          dontUseCmakeConfigure = true;
 
-            
-            shellHook = ''
-              export $EXTRA_CUDA_FLAGS="-I${cudaPackages.cudatoolkit}/include" -L${cudaPackages.cudatoolkit}/lib64"
-              export NIXPLGS_ALLOW_UNFREE=1
-            '';
+          installPhase = ''
+          mkdir -p $out/bin
+          cp -r * $out/bin
+          '';
 
-            installPhase = ''
-              mkdir -p $out/bin
-              cp -r * $out/bin
-              echo $(gcc --version)
-              echo $(nvcc --version)
-            '';
-
-            nativeBuildInputs = [
-              python312Packages.python
-              gnumake
-              gcc11
-              libcxx
-              cudaPackages.cudatoolkit
-              linuxPackages.nvidia_x11
-              poetry
-              bash
-            ];
-            dontUseCmakeConfigure = true;
-
-            meta = {
-              description = "A streamlined Tensor library";
-              homepage = "https://www.github.com/octakitten/tensorplus";
-            };
+          meta = {
+            description = "A streamlined Tensor library";
+            homepage = "https://www.github.com/octakitten/tensorplus";
           };
-        
+        };
       });
     };
   }
