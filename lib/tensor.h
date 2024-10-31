@@ -10,6 +10,37 @@ typedef struct {
     short* data;
 } Tensor;
 
+typedef struct {
+    unsigned int* dims;
+    short* data;
+} Tensor_short;
+
+typedef struct {
+    unsigned int* dims;
+    int* data;
+} Tensor_int;
+
+typedef struct {
+    unsigned int* dims;
+    float* data;
+} Tensor_float;
+
+typedef struct {
+    unsigned int* dims;
+    double* data;
+} Tensor_double;
+
+typedef struct {
+    unsigned int* dims;
+    long* data;
+} Tensor_long;
+
+typedef struct {
+    int* dims;
+    int* type;
+    void* data;
+} TensorMulti;
+
 Tensor* create_tensor(unsigned int size);
 void destroy_tensor(Tensor* tensor);
 Tensor* create_device_tensor(unsigned int size);

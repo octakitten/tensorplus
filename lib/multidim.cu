@@ -4,13 +4,6 @@
 #include <stdio.h>
 
 
-struct Tensor_multi {
-    int* dims;
-    int dimx, dimy, dimz;
-    short* data;
-    int size; 
-
-};
 
 
     void Tensor_multi(struct Tensor_multi* tensor, int n, int m, int k) {
