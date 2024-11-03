@@ -6,5 +6,4 @@ RUN pipx install poetry
 RUN git clone https://github.com/octakitten/tensorplus.git
 WORKDIR /tensorplus
 RUN make
-RUN poetry install
-RUN poetry build
+RUN export POETRY_HOME=/opt/poetry && poetry build
