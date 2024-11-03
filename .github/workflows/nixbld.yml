@@ -10,6 +10,6 @@ jobs:
     container:
       image: nixos/nix
     steps:
-    - run: wget https://github.com/octakitten/tensorplus/archive/refs/heads/main.zip
-    - run: unzip main.zip
-    - run: bash build.sh
+
+
+
