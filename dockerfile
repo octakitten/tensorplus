@@ -1,6 +1,5 @@
 FROM nixpkgs/nix-flakes
 
-RUN wget https://github.com/octakitten/tensorplus/archive/refs/heads/main.zip
-RUN unzip main.zip
-RUN sh tensorplus-main/build.sh
-
+RUN git clone https://github.com/octakitten/tensorplus.git
+WORKDIR /tensorplus
+RUN sh build.sh
