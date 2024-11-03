@@ -10,8 +10,4 @@ jobs:
     container:
       image: octakitten/tensorplus-v01
     steps:
-      - uses: 
-
-
-
-
+      - uses: actions/checkout@v4
