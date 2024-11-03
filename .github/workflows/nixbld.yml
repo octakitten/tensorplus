@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - main
+env: 
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   build:
@@ -11,7 +13,5 @@ jobs:
       image: octakitten/tensorplus-v01
     steps:
       - uses: actions/checkout@v4
-      - run: gh release create --latest --generate-notes /tensorplus/dist/*.whl
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+      - run: |
+        gh release create --latest --generate-notes /tensorplus/dist/*.whl
