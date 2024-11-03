@@ -25,12 +25,12 @@ CP= cp -f
 CMD= bash
 BUILDSCRIPT= build.sh
 .PHONY: clean
-TARGETDIR = #bin/
+TARGETDIR = bin/
 SOURCEDIR = lib/
-BUILDDIR = #build/
-OBJDIR = #objects/
+BUILDDIR = build/
+OBJDIR = objects/
 MAKEDIRS = mkdir -p 
-INSTALLDIR = #src/tensorplus/
+INSTALLDIR = src/tensorplus/
 
 all: $(TARGETDIR)$(TARGET) $(TARGETDIR)$(TARGETMAC) $(TARGETDIR)$(TARGETWIN)
 
