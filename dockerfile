@@ -1,15 +1,5 @@
-FROM python:3.12
+FROM nixos/nix
 
-RUN apt-get update
-RUN apt-get install -y \
-    gcc \
-    git \
-    vim \
-    curl \
-    wget \
-    unzip
-COPY . /tensorplus
-WORKDIR /tensorplus
-ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
-ENV PATH=/usr/local/cuda/bin:$PATH
-RUN make
+RUN wget https://github.com/octakitten/tensorplus/archive/refs/heads/main.zip
+RUN gzip main.zip
+RUN bash build.sh
