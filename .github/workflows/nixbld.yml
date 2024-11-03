@@ -10,6 +10,4 @@ jobs:
     container:
       image: nixos/nix
     steps:
-    - uses: actions/checkout@v4
-
     - run: bash build.sh
