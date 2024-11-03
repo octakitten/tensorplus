@@ -1,0 +1,11 @@
+name: Tensorplus Wheel Build with Nix
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: [self-hosted, linux, x64]
+    container:
+      image: octakitten/tensorplus-v01
