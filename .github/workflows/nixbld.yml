@@ -13,5 +13,4 @@ jobs:
       image: octakitten/tensorplus-v01
     steps:
       - uses: actions/checkout@v4
-      - run: |
-        gh release create --latest --generate-notes /tensorplus/dist/*.whl
+      - run: gh release create --latest --generate-notes /tensorplus/dist/*.whl
