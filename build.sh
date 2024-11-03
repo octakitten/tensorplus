@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 nix build --impure
 cp result/bin/tensorplus.so src/tensorplus/tensorplus.so
 cp result/bin/tensorplus.dylib src/tensorplus/tensorplus.dylib
