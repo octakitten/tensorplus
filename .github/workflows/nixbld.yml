@@ -13,4 +13,4 @@ jobs:
       image: octakitten/tensorplus-v01
     steps:
       - run: gh release delete latest -y --cleanup-tag
-      - run: gh release create --verify-tag latest /tensorplus/dist/*.whl
+      - run: gh release create latest /tensorplus/dist/*.whl
