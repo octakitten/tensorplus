@@ -343,18 +343,193 @@ __global__ void vector_div_tensor_double_kernel(unsigned int* dims, double* src,
 }
 
 __global__ void vector_mod_tensor_double_unsigned(int* dims, double* src, double* other, double* vectors, double* result) {
-    unsigned int index = blockIdx.x a* blockDim.x + threadIdx.x;
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
     if (index < dims[dims[0] + 1]) {
         result[index] = src[index] % other[vectors[index]];
     }
 }
- 
+
 __global__ void vector_gate_tensor_double_kernel(unsigned int* dims, double* src, double* other, double* vectors, double* result) {
     unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
     if (index < dims[dims[0] + 1]) {
         if (other[vectors[index]] != 0) {
-            result[index] = src[index];
+            result[index] = sin(src[index]);
         }
+    }
+}
+
+__global__ void sin_tensor_double_kernel(unsigned int* dims, double* src, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = sin(src[index]);
+    }
+}
+
+__global__ void cos_tensor_double_kernel(unsigned int* dims, double* src, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = cos(src[index]);
+    }
+}
+
+__global__ void tan_tensor_double_kernel(unsigned int* dims, double* src, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = tan(src[index]);
+    }
+}
+
+__global__ void sec_tensor_double_kernel(unsigned int* dims, double* src, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = 1 / sin(src[index]);
+    }
+}
+
+__global__ void csc_tensor_double_kernel(unsigned int* dims, double* src, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = 1 / sin(src[index]);
+    }
+}
+
+__global__ void cot_tensor_double_kernel(unsigned int* dims, double* src, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = 1 / tan(src[index]);
+    }
+}
+__global__ void arcsin_tensor_double_kernel(unsigned int* dims, double* src, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = asin(src[index]);
+    }
+}
+
+__global__ void arccos_tensor_double_kernel(unsigned int* dims, double* src, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = acos(src[index]);
+    }
+}
+
+__global__ void arctan_tensor_double_kernel(unsigned int* dims, double* src, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = atan(src[index]);
+    }
+}
+
+
+__global__ void vector_sin_tensor_double_kernel(unsigned int* dims, double* src, double* vectors, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = sin(src[vectors[index]]);
+    }
+}
+
+__global__ void vector_cos_tensor_double_kernel(unsigned int* dims, double* src, double* vectors, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = cos(src[vectors[index]]);
+    }
+}
+
+__global__ void vector_tan_tensor_double_kernel(unsigned int* dims, double* src, double* vectors, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = tan(src[vectors[index]]);
+    }
+}
+
+__global__ void vector_arcsin_tensor_double_kernel(unsigned int* dims, double* src, double* vectors, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = asin(src[vectors[index]]);
+    }
+}
+
+__global__ void vector_arccos_tensor_double_kernel(unsigned int* dims, double* src, double* vectors, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = acos(src[vectors[index]]);
+    }
+}
+
+__global__ void vector_arctan_tensor_double_kernel(unsigned int* dims, double* src, double* vectors, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = atan(src[vectors[index]]);
+    }
+}
+
+__global__ void pow_tensor_double_kernel(unsigned int* dims, double* src, double* other, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = pow(src[index], other[index]);
+    }
+}
+
+__global__ void sqrt_tensor_double_kernel(unsigned int* dims, double* src, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = sqrt(src[index]);
+    }
+}
+
+__global__ void exp_tensor_double_kernel(unsigned int* dims, double* src, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = exp(src[index]);
+    }
+}
+
+__global__ void ln_tensor_double_kernel(unsigned int* dims, double* src, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = log(src[index]);
+    }
+}
+
+__global__ void abs_tensor_double_kernel(unsigned int* dims, double* src, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = fabs(src[index]);
+    }
+}
+
+__global__ void vector_pow_tensor_double_kernel(unsigned int* dims, double* src, double* other, double* vectors, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = pow(src[index], other[vectors[index]]);
+    }
+}
+
+__global__ void vector_sqrt_tensor_double_kernel(unsigned int* dims, double* src, double* vectors, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = sqrt(src[vectors[index]]);
+    }
+}
+
+__global__ void vector_exp_tensor_double_kernel(unsigned int* dims, double* src, double* vectors, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = exp(src[vectors[index]]);
+    }
+}
+
+__global__ void vector_ln_tensor_double_kernel(unsigned int* dims, double* src, double* vectors, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = log(src[vectors[index]]);
+    }
+}
+
+__global__ void vector_abs_tensor_double_kernel(unsigned int* dims, double* src, double* vectors, double* result) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index < dims[dims[0] + 1]) {
+        result[index] = fabs(src[vectors[index]]);
     }
 }
 
@@ -660,3 +835,141 @@ extern "C" void vector_gate_tensor_double(Tensor_double* src, Tensor_double* oth
     vector_gate_tensor_double_kernel<<<(dims[dime[0] + 1] + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK, THREADS_PER_BLOCK, THREADS_PER_BLOCK * sizeof(double)>>>(src->dims, src->data, other->data, vectors->data, result->data);
     cudaDeviceSynchronize();
 }
+
+
+extern "C" void sin_tensor_double(Tensor_double* src, Tensor_double* result) {
+    unsigned int dim0;
+    cudaMemcpy(dim0, src->dims[0], sizeof(unsigned int), cudamemcpyDeviceToHost);
+    unsigned int* dims = (unsigned int*) malloc(sizeof(unsigned int) * (2 + dim0));
+    cudaMemcpy(dims, src->dims[0],sizeof(unsigned int) * (2 + dim0) cudaMemcpyDeviceToHost);
+    sin_tensor_double_kernel<<<(dims[dime[0] + 1] + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK, THREADS_PER_BLOCK, THREADS_PER_BLOCK * sizeof(double)>>>(src->dims, src->data, result->data);
+    cudaDeviceSynchronize();
+}
+
+extern "C" void cos_tensor_double(Tensor_double* src, Tensor_double* result) {
+    unsigned int dim0;
+    cudaMemcpy(dim0, src->dims[0], sizeof(unsigned int), cudamemcpyDeviceToHost);
+    unsigned int* dims = (unsigned int*) malloc(sizeof(unsigned int) * (2 + dim0));
+    cudaMemcpy(dims, src->dims[0],sizeof(unsigned int) * (2 + dim0) cudaMemcpyDeviceToHost);
+    cos_tensor_double_kernel<<<(dims[dime[0] + 1] + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK, THREADS_PER_BLOCK, THREADS_PER_BLOCK * sizeof(double)>>>(src->dims, src->data, result->data);
+    cudaDeviceSynchronize();
+}
+
+extern "C" void tan_tensor_double(Tensor_double* src, Tensor_double* result) {
+    unsigned int dim0;
+    cudaMemcpy(dim0, src->dims[0], sizeof(unsigned int), cudamemcpyDeviceToHost);
+    unsigned int* dims = (unsigned int*) malloc(sizeof(unsigned int) * (2 + dim0));
+    cudaMemcpy(dims, src->dims[0],sizeof(unsigned int) * (2 + dim0) cudaMemcpyDeviceToHost);
+    tan_tensor_double_kernel<<<(dims[dime[0] + 1] + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK, THREADS_PER_BLOCK, THREADS_PER_BLOCK * sizeof(double)>>>(src->dims, src->data, result->data);
+    cudaDeviceSynchronize();
+}
+
+extern "C" void sec_tensor_double(Tensor_double* src, Tensor_double* result) {
+    unsigned int dim0;
+    cudaMemcpy(dim0, src->dims[0], sizeof(unsigned int), cudamemcpyDeviceToHost);
+    unsigned int* dims = (unsigned int*) malloc(sizeof(unsigned int) * (2 + dim0));
+    cudaMemcpy(dims, src->dims[0],sizeof(unsigned int) * (2 + dim0) cudaMemcpyDeviceToHost);
+    sec_tensor_double_kernel<<<(dims[dime[0] + 1] + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK, THREADS_PER_BLOCK, THREADS_PER_BLOCK * sizeof(double)>>>(src->dims, src->data, result->data);
+    cudaDeviceSynchronize();
+}
+
+extern "C" void csc_tensor_double(Tensor_double* src, Tensor_double* result) {
+    unsigned int dim0;
+    cudaMemcpy(dim0, src->dims[0], sizeof(unsigned int), cudamemcpyDeviceToHost);
+    unsigned int* dims = (unsigned int*) malloc(sizeof(unsigned int) * (2 + dim0));
+    cudaMemcpy(dims, src->dims[0],sizeof(unsigned int) * (2 + dim0) cudaMemcpyDeviceToHost);
+    csc_tensor_double_kernel<<<(dims[dime[0] + 1] + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK, THREADS_PER_BLOCK, THREADS_PER_BLOCK * sizeof(double)>>>(src->dims, src->data, result->data);
+    cudaDeviceSynchronize();
+}
+
+extern "C" void cot_tensor_double(Tensor_double* src, Tensor_double* result) {
+    unsigned int dim0;
+    cudaMemcpy(dim0, src->dims[0], sizeof(unsigned int), cudamemcpyDeviceToHost);
+    unsigned int* dims = (unsigned int*) malloc(sizeof(unsigned int) * (2 + dim0));
+    cudaMemcpy(dims, src->dims[0],sizeof(unsigned int) * (2 + dim0) cudaMemcpyDeviceToHost);
+    cot_tensor_double_kernel<<<(dims[dime[0] + 1] + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK, THREADS_PER_BLOCK, THREADS_PER_BLOCK * sizeof(double)>>>(src->dims, src->data, result->data);
+    cudaDeviceSynchronize();
+}
+
+extern "C" void arcsin_tensor_double(Tensor_double* src, Tensor_double* result) {
+    unsigned int dim0;
+    cudaMemcpy(dim0, src->dims[0], sizeof(unsigned int), cudamemcpyDeviceToHost);
+    unsigned int* dims = (unsigned int*) malloc(sizeof(unsigned int) * (2 + dim0));
+    cudaMemcpy(dims, src->dims[0],sizeof(unsigned int) * (2 + dim0) cudaMemcpyDeviceToHost);
+    arcsin_tensor_double_kernel<<<(dims[dime[0] + 1] + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK, THREADS_PER_BLOCK, THREADS_PER_BLOCK * sizeof(double)>>>(src->dims, src->data, result->data);
+    cudaDeviceSynchronize();
+}
+
+
+extern "C" void arccos_tensor_double(Tensor_double* src, Tensor_double* result) {
+    unsigned int dim0;
+    cudaMemcpy(dim0, src->dims[0], sizeof(unsigned int), cudamemcpyDeviceToHost);
+    unsigned int* dims = (unsigned int*) malloc(sizeof(unsigned int) * (2 + dim0));
+    cudaMemcpy(dims, src->dims[0],sizeof(unsigned int) * (2 + dim0) cudaMemcpyDeviceToHost);
+    arccos_tensor_double_kernel<<<(dims[dime[0] + 1] + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK, THREADS_PER_BLOCK, THREADS_PER_BLOCK * sizeof(double)>>>(src->dims, src->data, result->data);
+    cudaDeviceSynchronize();
+}
+
+extern "C" void arctan_tensor_double(Tensor_double* src, Tensor_double* result) {
+    unsigned int dim0;
+    cudaMemcpy(dim0, src->dims[0], sizeof(unsigned int), cudamemcpyDeviceToHost);
+    unsigned int* dims = (unsigned int*) malloc(sizeof(unsigned int) * (2 + dim0));
+    cudaMemcpy(dims, src->dims[0],sizeof(unsigned int) * (2 + dim0) cudaMemcpyDeviceToHost);
+    arctan_tensor_double_kernel<<<(dims[dime[0] + 1] + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK, THREADS_PER_BLOCK, THREADS_PER_BLOCK * sizeof(double)>>>(src->dims, src->data, result->data);
+    cudaDeviceSynchronize();
+}
+
+extern "C" void vector_sin_tensor_double(Tensor_double* src, Tensor_double* vectors, Tensor_double* result) {
+    unsigned int dim0;
+    cudaMemcpy(dim0, src->dims[0], sizeof(unsigned int), cudamemcpyDeviceToHost);
+    unsigned int* dims = (unsigned int*) malloc(sizeof(unsigned int) * (2 + dim0));
+    cudaMemcpy(dims, src->dims[0],sizeof(unsigned int) * (2 + dim0) cudaMemcpyDeviceToHost);
+    sin_tensor_double_kernel<<<(dims[dime[0] + 1] + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK, THREADS_PER_BLOCK, THREADS_PER_BLOCK * sizeof(double)>>>(src->dims, src->data, vectors->data, result->data);
+    cudaDeviceSynchronize();
+}
+
+extern "C" void vector_cos_tensor_double(Tensor_double* src, Tensor_double* vectors, Tensor_double* result) {
+    unsigned int dim0;
+    cudaMemcpy(dim0, src->dims[0], sizeof(unsigned int), cudamemcpyDeviceToHost);
+    unsigned int* dims = (unsigned int*) malloc(sizeof(unsigned int) * (2 + dim0));
+    cudaMemcpy(dims, src->dims[0],sizeof(unsigned int) * (2 + dim0) cudaMemcpyDeviceToHost);
+    cos_tensor_double_kernel<<<(dims[dime[0] + 1] + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK, THREADS_PER_BLOCK, THREADS_PER_BLOCK * sizeof(double)>>>(src->dims, src->data, vectors->data, result->data);
+    cudaDeviceSynchronize();
+}
+
+extern "C" void vector_tan_tensor_double(Tensor_double* src, Tensor_double* vectors, Tensor_double* result) {
+    unsigned int dim0;
+    cudaMemcpy(dim0, src->dims[0], sizeof(unsigned int), cudamemcpyDeviceToHost);
+    unsigned int* dims = (unsigned int*) malloc(sizeof(unsigned int) * (2 + dim0));
+    cudaMemcpy(dims, src->dims[0],sizeof(unsigned int) * (2 + dim0) cudaMemcpyDeviceToHost);
+    tan_tensor_double_kernel<<<(dims[dime[0] + 1] + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK, THREADS_PER_BLOCK, THREADS_PER_BLOCK * sizeof(double)>>>(src->dims, src->data, vectors->data, result->data);
+    cudaDeviceSynchronize();
+}
+
+extern "C" void vector_arcsin_tensor_double(Tensor_double* src, Tensor_double* vectors, Tensor_double* result) {
+    unsigned int dim0;
+    cudaMemcpy(dim0, src->dims[0], sizeof(unsigned int), cudamemcpyDeviceToHost);
+    unsigned int* dims = (unsigned int*) malloc(sizeof(unsigned int) * (2 + dim0));
+    cudaMemcpy(dims, src->dims[0],sizeof(unsigned int) * (2 + dim0) cudaMemcpyDeviceToHost);
+    arcsin_tensor_double_kernel<<<(dims[dime[0] + 1] + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK, THREADS_PER_BLOCK, THREADS_PER_BLOCK * sizeof(double)>>>(src->dims, src->data, vectors->data, result->data);
+    cudaDeviceSynchronize();
+}
+
+extern "C" void vector_arccos_tensor_double(Tensor_double* src, Tensor_double* vectors, Tensor_double* result) {
+    unsigned int dim0;
+    cudaMemcpy(dim0, src->dims[0], sizeof(unsigned int), cudamemcpyDeviceToHost);
+    unsigned int* dims = (unsigned int*) malloc(sizeof(unsigned int) * (2 + dim0));
+    cudaMemcpy(dims, src->dims[0],sizeof(unsigned int) * (2 + dim0) cudaMemcpyDeviceToHost);
+    arccos_tensor_double_kernel<<<(dims[dime[0] + 1] + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK, THREADS_PER_BLOCK, THREADS_PER_BLOCK * sizeof(double)>>>(src->dims, src->data, vectors->data, result->data);
+    cudaDeviceSynchronize();
+}
+
+extern "C" void vector_arctan_tensor_double(Tensor_double* src, Tensor_double* vectors, Tensor_double* result) {
+    unsigned int dim0;
+    cudaMemcpy(dim0, src->dims[0], sizeof(unsigned int), cudamemcpyDeviceToHost);
+    unsigned int* dims = (unsigned int*) malloc(sizeof(unsigned int) * (2 + dim0));
+    cudaMemcpy(dims, src->dims[0],sizeof(unsigned int) * (2 + dim0) cudaMemcpyDeviceToHost);
+    arctan_tensor_double_kernel<<<(dims[dime[0] + 1] + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK, THREADS_PER_BLOCK, THREADS_PER_BLOCK * sizeof(double)>>>(src->dims, src->data, vectors->data, result->data);
+    cudaDeviceSynchronize();
+}
+
