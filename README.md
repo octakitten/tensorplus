@@ -1,15 +1,8 @@
-    Tensorplus - a streamlined tensor library
-    Copyright (C) 2024 octakitten
+Tensorplus - a streamlined tensor library
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+Tensorplus is a Python package, written using C and Cuda, intended to be used by the Silky Project. 
+Other applications and libraries may find it useful as well, and are welcome to use it as they see fit.
+It is intended to be a lightweight solution that provides simple mathematical functions on tensors. It 
+does not provide high level automation of ML functions or make your models for you, unfortunately. There
+simply are some math operations that other major ML libraries don't do well or provide at all, and the 
+author needed those functions for another project. Thus, this library exists.
