@@ -10,6 +10,7 @@ LDFLAGS = -shared
 TARGETFLAGS = #--output-directory $(TARGETDIR)
 OBJTARFLAGS = #--output-directory $(BUILDDIR)$(OBJDIR)
 GCCFLAGS =
+EXTRA_CUDA_FLAGS = -fPIC
 
 SOURCES = tensorplus.c
 CUSOURCES = tensor.cu

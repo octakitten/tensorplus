@@ -12,5 +12,8 @@ jobs:
     container:
       image: octakitten/tensorplus-v01
     steps:
+      - run: make
+      - run: /venv/bin/poetry build
+      - run: zip tensorplus.zip /tensorplus/dist/*.whl /tensorplus/dist/*.so /tensorplus/dist/*.dylib /tensorplus/dist/*.dll
       - run: gh release delete latest -y --cleanup-tag
       - run: gh release create latest /tensorplus/dist/*.whl

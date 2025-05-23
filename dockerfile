@@ -6,5 +6,3 @@ RUN /venv/bin/pip install -U pip setuptools
 RUN /venv/bin/pip install poetry
 RUN git clone https://github.com/octakitten/tensorplus.git
 WORKDIR /tensorplus
-RUN make
-RUN /venv/bin/poetry build

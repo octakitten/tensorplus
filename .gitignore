@@ -1,4 +1,7 @@
 /.vscode
-.lock
+*.lock
 result
 .bak
+/dist/*
+/src/tensorplus/*
+/dist/dist/*
