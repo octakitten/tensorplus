@@ -4,5 +4,3 @@ RUN apt-get update && apt-get install make git gh python3 python3-pip python3-ve
 RUN python3 -m venv /venv
 RUN /venv/bin/pip install -U pip setuptools
 RUN /venv/bin/pip install poetry
-RUN git clone https://github.com/octakitten/tensorplus.git
-WORKDIR /tensorplus

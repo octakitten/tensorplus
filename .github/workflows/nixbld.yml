@@ -11,9 +11,13 @@ jobs:
     runs-on: [self-hosted, linux, x64]
     container:
       image: octakitten/tensorplus-v01
+    defaults:
+      run:
+        working-directory: /tensorplus
     steps:
+      - uses: actions/checkout@v4
       - run: make
       - run: /venv/bin/poetry build
-      - run: zip tensorplus.zip /tensorplus/dist/*.whl /tensorplus/dist/*.so /tensorplus/dist/*.dylib /tensorplus/dist/*.dll
+      - run: zip tensorplus.zip dist/*.whl dist/*.so dist/*.dylib dist/*.dll
       - run: gh release delete latest -y --cleanup-tag
-      - run: gh release create latest /tensorplus/dist/*.whl
+      - run: gh release create latest tensorplus.zip
