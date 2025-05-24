@@ -1,4 +1,4 @@
-import tensorplus as tp
+from tensorplus import tensorplus as tp
 
 tensor_size = 4
 tensor = tp.create(tensor_size)
