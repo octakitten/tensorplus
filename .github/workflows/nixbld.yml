@@ -20,7 +20,7 @@ jobs:
       - run: gh release delete latest -y --cleanup-tag
       - run: gh release create latest tensorplus.zip
       - run: /venv/bin/pip3 install dist/tensorplus-0.0.2-py3-none-any.whl
-      - run: /venv/bin/pytest --maxfail=0 --junit=xml-results.xml --cov=tensorplus --cov-report=html --cov-report=term test/ | tee coverage.log
+      - run: /venv/bin/pytest --maxfail=0 --junit-xml=results.xml --cov=tensorplus --cov-report=html --cov-report=term test/ | tee coverage.log
       - uses: MishaKav/pytest-coverage-comment@main
         with:
           pytest-coverage-path: coverage.log
