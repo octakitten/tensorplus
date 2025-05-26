@@ -308,7 +308,7 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
     if (index[0] < size[0]) {
         result[0] = src[index[0]];
     }
-    printf("Value gotten from within the kernel: %d\n", src[index[0]]);
+    //printf("Value gotten from within the kernel: %d\n", src[index[0]]);
 }
 
         
@@ -921,48 +921,50 @@ extern "C" void set_tensor_wrapper( Tensor* tensor, unsigned int index, short va
 }
 
 extern "C" void get_tensor_value_wrapper( Tensor* tensor, unsigned int index, short value) {
-    cudaError_t err = cudaGetLastError();
-    printf("Get_tensor_value_wrapper function...\n");
-    printf("Getting size...\n");
+
+
+    //cudaError_t err = cudaGetLastError();
+    //printf("Get_tensor_value_wrapper function...\n");
+    //printf("Getting size...\n");
     unsigned int size = 0;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
-    err = cudaGetLastError();
-    printf("Error: %s\n", cudaGetErrorString(err));
-    printf("Setting device index...\n");
+    //err = cudaGetLastError();
+    //printf("Error: %s\n", cudaGetErrorString(err));
+    //printf("Setting device index...\n");
     unsigned int* device_index = NULL;
     cudaMalloc((void**) device_index, sizeof(unsigned int));
-    err = cudaGetLastError();
-    printf("Error: %s\n", cudaGetErrorString(err));
+    //err = cudaGetLastError();
+    //printf("Error: %s\n", cudaGetErrorString(err));
     cudaMemcpy(device_index, &index, sizeof(unsigned int), cudaMemcpyHostToDevice);
-    err = cudaGetLastError();
-    printf("Error: %s\n", cudaGetErrorString(err));
-    printf("Setting device_value...\n");
+    //err = cudaGetLastError();
+    //printf("Error: %s\n", cudaGetErrorString(err));
+    //printf("Setting device_value...\n");
     short* device_value = NULL;
     cudaMalloc((void**) device_value, sizeof(short));
-    err = cudaGetLastError();
-    printf("Error: %s\n", cudaGetErrorString(err));
+    //err = cudaGetLastError();
+    //printf("Error: %s\n", cudaGetErrorString(err));
     if (index < size) {
         get_tensor_value<<<1, 1>>>(tensor->size, tensor->data, device_index, device_value);
     }
-    err = cudaGetLastError();
-    printf("Error: %s\n", cudaGetErrorString(err));
+    //err = cudaGetLastError();
+    //printf("Error: %s\n", cudaGetErrorString(err));
     cudaDeviceSynchronize();
-    err = cudaGetLastError();
-    printf("Error: %s\n", cudaGetErrorString(err));
-    printf("Setting host value...\n");
+    //err = cudaGetLastError();
+    //printf("Error: %s\n", cudaGetErrorString(err));
+    //printf("Setting host value...\n");
     short host_value = 0;
     cudaMemcpy(&host_value, device_value, sizeof(short), cudaMemcpyDeviceToHost);
-    err = cudaGetLastError();
-    printf("Error: %s\n", cudaGetErrorString(err));
-    printf("Freeing pointers...\n");
+    //err = cudaGetLastError();
+    //printf("Error: %s\n", cudaGetErrorString(err));
+    //printf("Freeing pointers...\n");
     cudaFree(device_value);
     cudaFree(device_index);
-    err = cudaGetLastError();
-    printf("Error: %s\n", cudaGetErrorString(err));
-    printf("Returning value: %d\n", host_value);
+    //err = cudaGetLastError();
+    //printf("Error: %s\n", cudaGetErrorString(err));
+    //printf("Returning value: %d\n", host_value);
     value = host_value;
-    err = cudaGetLastError();
-    printf("Error: %s\n", cudaGetErrorString(err));
+    //err = cudaGetLastError();
+    //printf("Error: %s\n", cudaGetErrorString(err));
 }
 
 extern "C" void add_tensor_wrapper( Tensor* tensor,  Tensor* other,  Tensor* result) {
