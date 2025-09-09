@@ -314,18 +314,18 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
         
         
         __global__ void zeros_tensor( unsigned int* size, short* data) {
-            extern __shared__ short tmp[];
+            //extern __shared__ short tmp[];
             unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
             unsigned int block_index = threadIdx.x;
             //printf("Printing from within zeros tensor kernel! Index: %d\n", index);
 
             if (index < size[0]) {
-                tmp[block_index] = 0;
+                data[index] = 0;
                 //printf("setting to %d\n", value);
             }
 
             __syncthreads();
-            data[index] = tmp[0];
+            //data[index] = tmp[0];
         }
 
         __global__
