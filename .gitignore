@@ -1,8 +1,10 @@
 /.vscode
 *.lock
 result
-.bak
-/dist/*
-/src/tensorplus/*
-/dist/dist/*
+*.bak
+*.so
+*.dylib
+*.dll
+*.whl
 *.o
+*.gz
