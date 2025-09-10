@@ -75,12 +75,13 @@
               export NIXPLGS_ALLOW_UNFREE=1
             '';
 
+              #mkdir -p $out/bin
+              #cp -r * $out/bin
+              #cd $out/bin
             installPhase = ''
-              mkdir -p $out/bin
-              cp -r * $out/bin
-              cd $out/bin
               poetry install
               poetry build
+              poetry run pytest --maxfail=0 --junit-xml=results.xml --cov-report=html test/ | tee results.txt || true
             '';
 
             nativeBuildInputs = [

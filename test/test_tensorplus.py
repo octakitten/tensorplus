@@ -1,4 +1,5 @@
 from tensorplus import tensorplus as tp
+import pytest
 
 tensor_size = 4
 tensor = tp.create(tensor_size)
@@ -51,9 +52,3 @@ def test_size():
     tp.size(tensor, num)
     assert num == 4
     return
-
-
-test_zeros()
-test_ones()
-test_fill()
-test_print()

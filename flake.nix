@@ -61,7 +61,9 @@
           cudaPackages.cudatoolkit
           cudaPackages.cuda_nvcc
           linuxPackages.nvidia_x11
+          poetry
           bash
+          zip
         ];
 
         shellHook = ''
@@ -79,8 +81,10 @@
           dontUseCmakeConfigure = true;
 
           installPhase = ''
-          mkdir -p $out/bin
-          cp -r * $out/bin
+          poetry build
+          poetry install
+          poetry run pytest --maxfail=0 --junit-xml=results.xml --cov-report=html test/ | tee coverage.txt || true
+          zip tensorplus.zip $out/src/tensorplus.so $out/src/tensorplus.dylib $out/src/tensorplus.dll $out/src/tensorplus*.whl 
           '';
 
           meta = {
