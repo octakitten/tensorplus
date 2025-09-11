@@ -18,7 +18,7 @@ jobs:
       - run: /venv/bin/poetry build
       - run: zip tensorplus.zip dist/*.whl dist/*.so dist/*.dylib dist/*.dll
       - run: gh release delete nightly -y --cleanup-tag
-      - run: gh release create nightly --prerelease --tiutle "Nightly Build" --notes "Automated nightly builds." tensorplus.zip
+      - run: gh release create nightly --prerelease --title "Nightly Build" --notes "Automated nightly builds." tensorplus.zip
       - run: /venv/bin/pip3 install dist/tensorplus-0.0.2-py3-none-any.whl
       - run: /venv/bin/pytest --maxfail=0 --junit-xml=results.xml --cov=tensorplus --cov-report=html --cov-report=term test/ | tee coverage.log
       - uses: MishaKav/pytest-coverage-comment@main
