@@ -3,6 +3,8 @@
 #rm src/tensorplus/tensorplus.dylib
 #rm src/tensorplus/tensorplus.dll
 
+make clean
+
 make 
 
 cp bin/tensorplus.so src/tensorplus/tensorplus.so
