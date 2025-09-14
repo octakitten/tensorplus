@@ -1,4 +1,4 @@
-FROM nvidia/cuda:13.0.1-cudnn-devel-ubuntu24.04
+FROM nvidia/cuda:12.6.3-cudnn-devel-ubuntu24.04
 
 RUN apt-get update && apt-get install bash make git gh python3 python3-pip python3-venv zip curl python3.12-dev build-essential -y
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
