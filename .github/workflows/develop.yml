@@ -13,7 +13,6 @@ jobs:
       image: octakitten/tensorplus-v01
     steps:
       - uses: actions/checkout@v4
-      - run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - run: sh build.sh
       - run: uv build --wheel dist
       - run: zip tensorplus.zip dist/*.whl dist/*.so dist/*.dylib dist/*.dll
