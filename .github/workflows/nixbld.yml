@@ -13,7 +13,6 @@ jobs:
       image: octakitten/tensorplus-v01
     steps:
       - uses: actions/checkout@v4
-      - run: make
       - run: sh build.sh
       - run: /venv/bin/poetry build
       - run: zip tensorplus.zip dist/*.whl dist/*.so dist/*.dylib dist/*.dll

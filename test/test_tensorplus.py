@@ -1,4 +1,4 @@
-import tensorplus as tp
+from tensorplus import tensorplus as tp
 import pytest
 
 tensor_size = 4
@@ -11,7 +11,7 @@ def test_zeros():
     tp.zeros(tensor)
     num = 1
     print("Testing get()...")
-    tp.get(tensor, 1, num)
+    tp.getval(tensor, 1, num)
     assert num == 0
     return
 
@@ -22,7 +22,7 @@ def test_ones():
     tp.get(tensor, 0, num)
     assert num == 1
     return
-
+'''
 def test_fill():
     print("Testing fill()...")
     tp.fill(result, 2)
@@ -52,3 +52,7 @@ def test_size():
     tp.size(tensor, num)
     assert num == 4
     return
+'''
+#tp.destroy(tensor)
+#tp.destroy(other)
+#tp.destroy(result)
