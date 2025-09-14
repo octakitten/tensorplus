@@ -11,7 +11,7 @@ def test_zeros():
     tp.zeros(tensor)
     num = 1
     print("Testing get()...")
-    tp.getval(tensor, 1, num)
+    tp.get(tensor, 1, num)
     assert num == 0
     return
 
