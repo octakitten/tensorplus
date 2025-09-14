@@ -1,9 +1,9 @@
 SHELL = /bin/bash
-CC = gcc
+CC = g++
 CXX = nvcc
 DEBUGFLAGS =
 FLAGS =  -I/opt/cuda/include -L/opt/cuda/lib64
-CFLAGS =  --std=c++11
+CFLAGS =  #--std=c++11
 CUDAFLAGS = -Xcompiler -fPIC -Xcompiler -static -arch=sm_80
 RELEASEFLAGS =
 LDFLAGS = -shared
