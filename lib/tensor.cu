@@ -33,6 +33,7 @@ __global__ void vector_mul_tensor(unsigned int* size, short* src, short* other, 
 __global__ void vector_div_tensor(unsigned int* size, short* src, short* other, short* vectors, short* result);
 __global__ void vector_gate_tensor(unsigned int* size, short* src, short* booleans, short* vectors, short* result);
 __global__ void set_tensor(unsigned int* size, short* src, unsigned int* index, short* value);
+__global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* index, short* result);
 __global__ void zeros_tensor( unsigned int* size, short* data );
 __global__ void ones_tensor( unsigned int* size, short* data);
 __global__ void print_tensor( unsigned int* size, short* data);
@@ -314,17 +315,18 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
         
         
         __global__ void zeros_tensor( unsigned int* size, short* data) {
-            //extern __shared__ short tmp[];
+            extern __shared__ short tmp[];
             unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
             unsigned int block_index = threadIdx.x;
             //printf("Printing from within zeros tensor kernel! Index: %d\n", index);
 
             if (index < size[0]) {
-                data[index] = 0;
+                tmp[block_index] = 0;
                 //printf("setting to %d\n", value);
             }
 
             __syncthreads();
+            data[index] = tmp[0];
             //data[index] = tmp[0];
         }
 
@@ -361,7 +363,8 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
             unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
             unsigned int block_index = threadIdx.x;
             if (index < size[0]) {
-                tmp[block_index] = value[0];
+                short tmp2 = value[0];
+                tmp[block_index] = tmp2;
                 //printf("setting to %d\n", value[0]);
             }
             __syncthreads();
@@ -813,18 +816,18 @@ extern "C" void zeros_tensor_wrapper( Tensor* tensor) {
     unsigned int size = 0;
     
     cudaError_t err = cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
-    printf("Error: %s\n", cudaGetErrorString(err));
-    printf("%d\n", size);
+    //printf("Error: %s\n", cudaGetErrorString(err));
+    //printf("%d\n", size);
     if (size < THREADS_PER_BLOCK) {
         zeros_tensor<<<1, size>>>(tensor->size, tensor->data);
-        printf("Ran the zeros tensor kernel!\n");
+        //printf("Ran the zeros tensor kernel!\n");
     } else if (size / THREADS_PER_BLOCK < BLOCKS_MAXIMUM) {
         zeros_tensor<<<get_device_dim(size), THREADS_PER_BLOCK>>>(tensor->size, tensor->data);
     } else {
         zeros_tensor<<<BLOCKS_MAXIMUM, THREADS_PER_BLOCK>>>(tensor->size, tensor->data);
     }
     err = cudaDeviceSynchronize();
-    printf("Error: %s\n", cudaGetErrorString(err));
+    //printf("Error: %s\n", cudaGetErrorString(err));
 }
 
 extern "C" void ones_tensor_wrapper( Tensor* tensor) {
@@ -892,7 +895,6 @@ extern "C" void fill_tensor_wrapper( Tensor* tensor, short value) {
     }
     err = cudaDeviceSynchronize();
     //printf("Error: %s\n", cudaGetErrorString(err));
-    cudaFree(device_value);
 }
 
 extern "C" void set_tensor_wrapper( Tensor* tensor, unsigned int index, short value) {

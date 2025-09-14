@@ -13,9 +13,9 @@ jobs:
       image: octakitten/tensorplus-v01
     steps:
       - uses: actions/checkout@v4
-      - run: make
+      - run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - run: sh build.sh
-      - run: /venv/bin/poetry build
+      - run: uv build --wheel dist
       - run: zip tensorplus.zip dist/*.whl dist/*.so dist/*.dylib dist/*.dll
       - run: gh release delete nightly -y --cleanup-tag
       - run: gh release create nightly --prerelease --title "Nightly Build" --notes "Automated nightly builds." tensorplus.zip
