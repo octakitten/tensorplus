@@ -10,7 +10,7 @@ license-files = [
     "LICENSE.md",
     "agpl.md"
     ]
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = []
 
 [build-system]
