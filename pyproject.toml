@@ -36,7 +36,7 @@ package = true
 [tool.uv.pip]
 extra = ["dev", "docs"]
 
-[tool.setuptools]
-ext-modules = [
-    {name = "tensorplus", sources = ["lib/tensorplus.c"]}
-    ]
+#[tool.setuptools]
+#ext-modules = [
+#    {name = "tensorplus", sources = ["lib/tensorplus.c"]}
+#    ]
