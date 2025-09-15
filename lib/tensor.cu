@@ -303,6 +303,7 @@ void set_tensor(unsigned int* size, short* src, unsigned int* index, short* valu
     if (index[0] < size[0]) {
         src[index[0]] = value[0];
     }
+    __syncthreads();
 }
 
 __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* index, short* result) {
