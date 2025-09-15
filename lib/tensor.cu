@@ -925,7 +925,7 @@ extern "C" void set_tensor_wrapper( Tensor* tensor, unsigned int index, short va
 extern "C" void get_tensor_value_wrapper( Tensor* tensor, unsigned int index, short* value) {
 
 
-    //cudaError_t err = cudaGetLastError();
+    cudaError_t err = cudaGetLastError();
     //printf("Get_tensor_value_wrapper function...\n");
     //printf("Getting size...\n");
     unsigned int size = 0;
