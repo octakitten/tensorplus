@@ -309,6 +309,7 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
     if (index[0] < size[0]) {
         result[0] = src[index[0]];
     }
+    __syncthreads();
     //printf("Value gotten from within the kernel: %d\n", src[index[0]]);
 }
 
