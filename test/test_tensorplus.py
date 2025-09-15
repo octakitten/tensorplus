@@ -22,7 +22,7 @@ def test_ones():
     tp.get(tensor, 0, num)
     assert num == 1
     return
-'''
+
 def test_fill():
     print("Testing fill()...")
     tp.fill(result, 2)
@@ -52,7 +52,7 @@ def test_size():
     tp.size(tensor, num)
     assert num == 4
     return
-'''
+
 #tp.destroy(tensor)
 #tp.destroy(other)
 #tp.destroy(result)
