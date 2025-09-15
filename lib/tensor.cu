@@ -957,8 +957,8 @@ extern "C" void get_tensor_value_wrapper( Tensor* tensor, unsigned int index, sh
     //short host_value = 0;
     cudaMemcpy(value, device_value, sizeof(short), cudaMemcpyDeviceToHost);
     printf("Value at index %d: %d\n", index, value[0]);
-    //err = cudaGetLastError();
-    //printf("Error: %s\n", cudaGetErrorString(err));
+    err = cudaGetLastError();
+    printf("Error: %s\n", cudaGetErrorString(err));
     //printf("Freeing pointers...\n");
     cudaFree(device_value);
     cudaFree(device_index);
