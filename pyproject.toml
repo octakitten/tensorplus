@@ -1,23 +1,42 @@
-[tool.poetry]
+[project]
 name = "tensorplus"
 version = "0.0.2"
-description = "A streamlined tensor library"
-authors = []
-license = "MIT"
+authors = [
+    { name = "octakitten", email = "raspberry2425@gmail.com" }
+    ]
+description = "A streamlined tensor library."
 readme = "README.md"
-repository = "https://github.com/octakitten/tensorplus"
-
-[tool.poetry.dependencies]
-python = ">=3.12"
-pytest = ">=7.4.3"
-coverage = ">=7.6.0"
-pytest-cov = ">=6.0.0"
-
-[tool.poetry.group.dev.dependencies]
-sphinx = ">7.3.0"
-sphinx-autoapi = ">=3.1.0"
-sphinx-rtd-theme = ">=0.1.0"
+license-files = [
+    "LICENSE.md",
+    "agpl.md"
+    ]
+requires-python = ">=3.12"
+dependencies = []
 
 [build-system]
-requires = ["poetry-core>=2.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "coverage",
+    "pytest-cov",
+    ]
+
+docs = [
+    "sphinx",
+    "sphinx-autoapi",
+    "sphinx-rtd-theme",
+    ]
+
+[tool.uv]
+package = true
+
+[tool.uv.pip]
+extra = ["dev", "docs"]
+
+[tool.setuptools]
+ext-modules = [
+    {name = "tensorplus", sources = ["lib/tensorplus.c"]}
+    ]

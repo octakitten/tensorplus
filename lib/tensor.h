@@ -51,7 +51,7 @@ void ones_tensor_wrapper( Tensor* tensor);
 void print_tensor_wrapper( Tensor* tensor);
 void fill_tensor_wrapper( Tensor* tensor, short value);
 void set_tensor_wrapper( Tensor* tensor, unsigned int index, short value);
-void get_tensor_value_wrapper( Tensor* tensor, unsigned int index, short value);
+void get_tensor_value_wrapper( Tensor* tensor, unsigned int index, short* value);
 void add_tensor_wrapper( Tensor* tensor,  Tensor* other,  Tensor* result);
 void sub_tensor_wrapper( Tensor* tensor,  Tensor* other,  Tensor* result);
 void mul_tensor_wrapper( Tensor* tensor,  Tensor* other,  Tensor* result);

@@ -137,7 +137,7 @@ static PyObject * get(PyObject * self, PyObject * args) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
-    get_tensor_value_wrapper(tensor, index, value);
+    get_tensor_value_wrapper(tensor, index, &value);
     return Py_BuildValue("");
 }
 
