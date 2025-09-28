@@ -34,10 +34,10 @@
     
     nixpkgsFor = forAllSystems (system: nixpkgs.legacyPackages.${system});
 
-    my_virt = python312.withPackages(ps: with ps; [
+    my_virt = python313.withPackages(ps: with ps; [
       pip
       virtualenv
-      poetry
+      uv
       pytest
       sphinx
       sphinx-autoapi
@@ -79,20 +79,19 @@
               #cp -r * $out/bin
               #cd $out/bin
             installPhase = ''
-              poetry install
-              poetry build
-              poetry run pytest --maxfail=0 --junit-xml=results.xml --cov-report=html test/ | tee results.txt || true
+              uv build --wheel
+              uv run pytest --maxfail=0 --junit-xml=results.xml --cov-report=html test/ | tee results.txt || true
             '';
 
             nativeBuildInputs = [
-              python312
-              python312Packages.virtualenv
+              python313
+              python313Packages.virtualenv
               gnumake
               gcc11
               gcc11Stdenv
               cudaPackages.cudatoolkit
               linuxPackages.nvidia_x11
-              poetry
+              uv
               bash
             ];
             dontUseCmakeConfigure = true;

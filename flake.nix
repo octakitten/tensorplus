@@ -7,19 +7,19 @@
       #hardware.nvidia.enable = true;
       #hardware.nvidia.driver = "nvidia";
       #hardware.opengl.enable = true;
-    poetry2nix.url = "github:nix-community/poetry2nix";
+    #poetry2nix.url = "github:nix-community/poetry2nix";
 
   };
 
-  outputs = { self, nixpkgs, poetry2nix }@inputs: 
+  outputs = { self, nixpkgs }@inputs: 
   let 
     pkgs = nixpkgs;
 
-    inherit (poetry2nix.lib.mkPoetry2Nix { inherit pkgs; }) mkPoetryEnv;
+    #inherit (poetry2nix.lib.mkPoetry2Nix { inherit pkgs; }) mkPoetryEnv;
 
     nixpkgs-unfree = import pkgs {
       overlays = [
-        poetry2nix.overlay
+        #poetry2nix.overlay
         (self: super: {
             nvidia = super.nvidia.override {
               acceptLicense = true;
@@ -55,13 +55,16 @@
         
         nativeBuildInputs = [ 
           #poetry-env
+          python312
+          python312.virtualenv
           gnumake
           gcc11
           gcc11Stdenv
           cudaPackages.cudatoolkit
           cudaPackages.cuda_nvcc
           linuxPackages.nvidia_x11
-          poetry
+          #poetry
+          uv
           bash
           zip
         ];
@@ -81,10 +84,9 @@
           dontUseCmakeConfigure = true;
 
           installPhase = ''
-          poetry build
-          poetry install
-          poetry run pytest --maxfail=0 --junit-xml=results.xml --cov-report=html test/ | tee coverage.txt || true
-          zip tensorplus.zip $out/src/tensorplus.so $out/src/tensorplus.dylib $out/src/tensorplus.dll $out/src/tensorplus*.whl 
+          uv build --wheel
+          uv run pytest --maxfail=0 --junit-xml=results.xml --cov-report=html test/ | tee coverage.txt || true
+          zip tensorplus.zip $out/src/tensorplus.so $out/src/tensorplus*.whl 
           '';
 
           meta = {
