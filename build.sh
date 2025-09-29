@@ -3,11 +3,11 @@
 #rm src/tensorplus/tensorplus.dylib
 #rm src/tensorplus/tensorplus.dll
 
-make clean
+#make clean
 
-make 
+#make 
 
-cp tensorplus.so src/tensorplus/tensorplus.so
+#cp tensorplus.so src/tensorplus/tensorplus.so
 #cp bin/tensorplus.dylib src/tensorplus/tensorplus.dylib
 #cp bin/tensorplus.dll src/tensorplus/tensorplus.dll
 
@@ -15,6 +15,12 @@ cp tensorplus.so src/tensorplus/tensorplus.so
 #rm dist/tensorplus.dylib
 #rm dist/tensorplus.dll
 
-cp tensorplus.so dist/tensorplus.so
+#cp tensorplus.so dist/tensorplus.so
 #cp bin/tensorplus.dylib dist/tensorplus.dylib
 #cp bin/tensorplus.dll dist/tensorplus.dll
+
+
+nix-build -E 'with import <nixpkgs> {}; callPackage ./default.nix {}' --verbose
+#rm -f src/tensorplus/tensorplus.so
+#cp result/bin/tensorplus src/tensorplus/tensorplus.so
+nix-shell

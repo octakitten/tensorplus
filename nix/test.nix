@@ -34,7 +34,7 @@
     
     nixpkgsFor = forAllSystems (system: nixpkgs.legacyPackages.${system});
 
-    my_virt = python313.withPackages(ps: with ps; [
+    my_virt = python312.withPackages(ps: with ps; [
       pip
       virtualenv
       uv
@@ -84,8 +84,8 @@
             '';
 
             nativeBuildInputs = [
-              python313
-              python313Packages.virtualenv
+              python312
+              python312Packages.virtualenv
               gnumake
               gcc11
               gcc11Stdenv
