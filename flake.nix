@@ -41,9 +41,6 @@
             nvidia = super.nvidia.override {
               acceptLicense = true;
             };
-            config = super.config.override {
-              allowUnfree = true;
-            };
          })
       ];
     };
@@ -65,6 +62,7 @@
             gcc13
             gcc13Stdenv
             cudaPackages.cudatoolkit
+            cudaPackages.backendStdenv
             linuxPackages.nvidia_x11
             uv
             bash
