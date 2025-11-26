@@ -9,7 +9,7 @@ result = tp.create(tensor_size)
 def test_zeros():
     print("Testing zeros()...")
     tp.zeros(tensor)
-    num = None
+    num = -1
     print("Testing get()...")
     tp.get(tensor, 1, num)
     assert num == 0
