@@ -2,7 +2,7 @@
 CC = g++
 CXX = nvcc
 DEBUGFLAGS =
-FLAGS =  -I/opt/cuda/include -I/opt/cuda/lib64
+FLAGS =  -I/opt/cuda/include -L/opt/cuda/lib64
 CFLAGS =  #--std=c++11
 CUDAFLAGS = -Xcompiler -fPIC -Xcompiler -static -arch=sm_80 -gencode=arch=compute_80,code=sm_80 -gencode=arch=compute_86,code=sm_86 -gencode=arch=compute_87,code=sm_87 -gencode=arch=compute_86,code=compute_86
 RELEASEFLAGS =
@@ -11,7 +11,7 @@ TARGETFLAGS = #--output-directory $(TARGETDIR)
 OBJTARFLAGS = #--output-directory $(BUILDDIR)$(OBJDIR)
 GCCFLAGS =
 EXTRA_CUDA_FLAGS = -fPIC
-FINAL_CUDA_FLAGS = -L/opt/cuda/lib64 -L/opt/cuda/targets -llibcudart_static
+FINAL_CUDA_FLAGS = -L/opt/cuda/targets -llibcudart
 
 SOURCES = tensorplus.c
 CUSOURCES = tensor.cu
