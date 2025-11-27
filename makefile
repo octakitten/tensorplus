@@ -1,5 +1,5 @@
 #SHELL = /bin/bash
-CC = gcc
+CC = g++
 CXX = nvcc
 DEBUGFLAGS =
 FLAGS =  -I/opt/cuda/include -L/opt/cuda/lib64
