@@ -11,7 +11,7 @@ TARGETFLAGS = #--output-directory $(TARGETDIR)
 OBJTARFLAGS = #--output-directory $(BUILDDIR)$(OBJDIR)
 GCCFLAGS =
 EXTRA_CUDA_FLAGS = -fPIC
-FINAL_CUDA_FLAGS = -L/opt/cuda/targets libcudart
+FINAL_CUDA_FLAGS = -L/opt/cuda/targets #libcudart.so
 
 SOURCES = tensorplus.c
 CUSOURCES = tensor.cu
