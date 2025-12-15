@@ -2,7 +2,7 @@ name: Tensorplus Wheel Build
 on:
   push:
     branches:
-      - develop
+      - dev
 env: 
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -13,9 +13,9 @@ jobs:
       image: octakitten/tensorplus-v01
     steps:
       - uses: actions/checkout@v4
+      - run: git config --global --add safe.directory /__w/tensorplus/tensorplus
       - run: sh build.sh
-      - run: uv build --wheel
-      - run: zip tensorplus.zip dist/*.whl dist/*.so dist/*.dylib dist/*.dll
+      - run: zip tensorplus.zip dist/*.whl dist/*.so
       - run: gh release delete nightly -y --cleanup-tag
       - run: gh release create nightly --prerelease --title "Nightly Build" --notes "Automated nightly builds." tensorplus.zip
       - run: /venv/bin/pip3 install dist/tensorplus*.whl
