@@ -8,7 +8,6 @@ description = "A streamlined tensor library."
 readme = "README.md"
 license-files = [
     "LICENSE.md",
-    "agpl.md"
     ]
 requires-python = ">=3.12"
 dependencies = []
