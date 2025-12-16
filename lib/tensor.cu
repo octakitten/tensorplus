@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include "defines.h"
 #ifdef __cplusplus
-extern "C" {
+/** extern "C" **/ {
     #include "tensor.h"
 }
 #else
@@ -61,7 +61,7 @@ int get_device_dim_remainder(unsigned int size);
 
 
 
-extern "C" Tensor* create_tensor(unsigned int size) {
+/** extern "C" **/ Tensor* create_tensor(unsigned int size) {
     Tensor *tensor = (Tensor*) malloc(sizeof(Tensor));
     tensor->size = (unsigned int*) malloc(sizeof(unsigned int));
     tensor->size = &size;
@@ -69,14 +69,14 @@ extern "C" Tensor* create_tensor(unsigned int size) {
     return tensor;
 }
 
-extern "C" void destroy_tensor(Tensor* tensor) {
+/** extern "C" **/ void destroy_tensor(Tensor* tensor) {
     free(tensor->data);
     free(tensor->size);
     free(tensor);
     tensor = NULL;
 }
 
-extern "C" void get_tensor_size_wrapper(Tensor* tensor, unsigned int size) {
+/** extern "C" **/ void get_tensor_size_wrapper(Tensor* tensor, unsigned int size) {
     cudaError_t err = cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     cudaDeviceSynchronize();
     printf("Printing the size from get_tensor_size_wrapper() function: %d\n", size);
@@ -127,7 +127,7 @@ void copy_cpu_to_cpu_tensor(Tensor* tensor, Tensor* result) {
     memcpy(&result->data, &tensor->data, sizeof(short) * tensor->size[0]);
 }
 
-extern "C" void clone_tensor(Tensor* tensor, Tensor* result) {
+/** extern "C" **/ void clone_tensor(Tensor* tensor, Tensor* result) {
   bool is_cuda1 = check_if_cuda_tensor(tensor);
   bool is_cuda2 = check_if_cuda_tensor(result);
   if (is_cuda1 && is_cuda2) {
@@ -141,7 +141,7 @@ extern "C" void clone_tensor(Tensor* tensor, Tensor* result) {
   }
 }
 
-extern "C" void copy_tensor(Tensor* tensor, Tensor* result) {
+/** extern "C" **/ void copy_tensor(Tensor* tensor, Tensor* result) {
   result = tensor;
 }
 
@@ -157,7 +157,7 @@ bool check_if_cuda_tensor(Tensor* tensor) {
   }
 }
 
-extern "C" Tensor* create_device_tensor(unsigned int size) {
+/** extern "C" **/ Tensor* create_device_tensor(unsigned int size) {
     //printf("step 1\n");
     unsigned int temp = size;
     Tensor *tensor = (Tensor*) malloc(sizeof(Tensor*));
@@ -178,7 +178,7 @@ extern "C" Tensor* create_device_tensor(unsigned int size) {
     return tensor;
 }
 
-extern "C" void destroy_device_tensor(Tensor* tensor) {
+/** extern "C" **/ void destroy_device_tensor(Tensor* tensor) {
     cudaFree(tensor->data);
     cudaFree(tensor->size);
     free(tensor);
@@ -672,7 +672,7 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
             return true;
         }
 
-        extern "C" bool check_size_3( Tensor* tensor,  Tensor* other,  Tensor* result) {
+        /** extern "C" **/ bool check_size_3( Tensor* tensor,  Tensor* other,  Tensor* result) {
             if (tensor->size[0] != other->size[0] || tensor->size[0] != result->size[0]) {
                 //printf("Error: size mismatch\n");
                 return false;
@@ -732,7 +732,7 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
   }
 }
 
-extern "C" void negate_tensor_wrapper(Tensor* tensor, Tensor* result) {
+/** extern "C" **/ void negate_tensor_wrapper(Tensor* tensor, Tensor* result) {
     unsigned int* size = (unsigned int*) malloc(sizeof(unsigned int));
     cudaMemcpy(size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size[0] < THREADS_PER_BLOCK) {
@@ -746,7 +746,7 @@ extern "C" void negate_tensor_wrapper(Tensor* tensor, Tensor* result) {
     free(size);
 }
 
-extern "C" void vector_add_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vectors,  Tensor* result) {
+/** extern "C" **/ void vector_add_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vectors,  Tensor* result) {
     unsigned int* size = (unsigned int*) malloc(sizeof(unsigned int));
     cudaMemcpy(size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size[0] < THREADS_PER_BLOCK) {
@@ -760,7 +760,7 @@ extern "C" void vector_add_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vec
     free(size);
 }
 
-extern "C" void vector_sub_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vectors,  Tensor* result) {
+/** extern "C" **/ void vector_sub_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vectors,  Tensor* result) {
     unsigned int size = 0;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size < THREADS_PER_BLOCK) {
@@ -773,7 +773,7 @@ extern "C" void vector_sub_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vec
     cudaDeviceSynchronize();
 }
 
-extern "C" void vector_mul_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vectors,  Tensor* result) {
+/** extern "C" **/ void vector_mul_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vectors,  Tensor* result) {
     unsigned int size = 0;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size < THREADS_PER_BLOCK) {
@@ -786,7 +786,7 @@ extern "C" void vector_mul_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vec
     cudaDeviceSynchronize();
 }
 
-extern "C" void vector_div_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vectors,  Tensor* result) {
+/** extern "C" **/ void vector_div_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vectors,  Tensor* result) {
     unsigned int size = 0;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size < THREADS_PER_BLOCK) {
@@ -799,7 +799,7 @@ extern "C" void vector_div_wrapper( Tensor* tensor,  Tensor* other,  Tensor* vec
     cudaDeviceSynchronize();
 }
 
-extern "C" void vector_gate_wrapper( Tensor* tensor,  Tensor* booleans,  Tensor* vectors,  Tensor* result) {
+/** extern "C" **/ void vector_gate_wrapper( Tensor* tensor,  Tensor* booleans,  Tensor* vectors,  Tensor* result) {
     unsigned int size = 0;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size < THREADS_PER_BLOCK) {
@@ -812,7 +812,7 @@ extern "C" void vector_gate_wrapper( Tensor* tensor,  Tensor* booleans,  Tensor*
     cudaDeviceSynchronize();
 }
 
-extern "C" void zeros_tensor_wrapper( Tensor* tensor) {
+/** extern "C" **/ void zeros_tensor_wrapper( Tensor* tensor) {
     unsigned int size = 0;
     
     cudaError_t err = cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
@@ -830,7 +830,7 @@ extern "C" void zeros_tensor_wrapper( Tensor* tensor) {
     //printf("Error: %s\n", cudaGetErrorString(err));
 }
 
-extern "C" void ones_tensor_wrapper( Tensor* tensor) {
+/** extern "C" **/ void ones_tensor_wrapper( Tensor* tensor) {
     unsigned int size = 0;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     //printf("Size: %d\n", size);
@@ -844,7 +844,7 @@ extern "C" void ones_tensor_wrapper( Tensor* tensor) {
     cudaDeviceSynchronize();
 }
 
-extern "C" void vector_sort_tensor_wrapper( Tensor* tensor,  Tensor* vectors,  Tensor* result)  {
+/** extern "C" **/ void vector_sort_tensor_wrapper( Tensor* tensor,  Tensor* vectors,  Tensor* result)  {
     unsigned int size = 0;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
 
@@ -858,7 +858,7 @@ extern "C" void vector_sort_tensor_wrapper( Tensor* tensor,  Tensor* vectors,  T
     cudaDeviceSynchronize();
 }
 
-extern "C" void print_tensor_wrapper( Tensor* tensor) {
+/** extern "C" **/ void print_tensor_wrapper( Tensor* tensor) {
     unsigned int size = 0;
     cudaError_t err = cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     //printf("Error: %s\n", cudaGetErrorString(err));
@@ -874,7 +874,7 @@ extern "C" void print_tensor_wrapper( Tensor* tensor) {
     //printf("Value at index 0: %d\n", val);
 }
 
-extern "C" void fill_tensor_wrapper( Tensor* tensor, short value) {
+/** extern "C" **/ void fill_tensor_wrapper( Tensor* tensor, short value) {
     unsigned int size = 0;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     //printf("Size: %d\n", size);
@@ -897,7 +897,7 @@ extern "C" void fill_tensor_wrapper( Tensor* tensor, short value) {
     //printf("Error: %s\n", cudaGetErrorString(err));
 }
 
-extern "C" void set_tensor_wrapper( Tensor* tensor, unsigned int index, short value) {
+/** extern "C" **/ void set_tensor_wrapper( Tensor* tensor, unsigned int index, short value) {
     //printf("Retrieving size...");
     unsigned int size = 0;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
@@ -922,7 +922,7 @@ extern "C" void set_tensor_wrapper( Tensor* tensor, unsigned int index, short va
     cudaFree(device_value);
 }
 
-extern "C" void get_tensor_value_wrapper( Tensor* tensor, unsigned int index, short* value) {
+/** extern "C" **/ void get_tensor_value_wrapper( Tensor* tensor, unsigned int index, short* value) {
 
 
     cudaError_t err = cudaGetLastError();
@@ -970,7 +970,7 @@ extern "C" void get_tensor_value_wrapper( Tensor* tensor, unsigned int index, sh
     //printf("Error: %s\n", cudaGetErrorString(err));
 }
 
-extern "C" void add_tensor_wrapper( Tensor* tensor,  Tensor* other,  Tensor* result) {
+/** extern "C" **/ void add_tensor_wrapper( Tensor* tensor,  Tensor* other,  Tensor* result) {
     unsigned int size = 0;
     
     cudaError_t err = cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
@@ -994,7 +994,7 @@ extern "C" void add_tensor_wrapper( Tensor* tensor,  Tensor* other,  Tensor* res
     //printf("Error: %s\n", cudaGetErrorString(err));
 }
 
-extern "C" void sub_tensor_wrapper( Tensor* tensor,  Tensor* other,  Tensor* result) {
+/** extern "C" **/ void sub_tensor_wrapper( Tensor* tensor,  Tensor* other,  Tensor* result) {
     unsigned int size = 0;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
@@ -1007,7 +1007,7 @@ extern "C" void sub_tensor_wrapper( Tensor* tensor,  Tensor* other,  Tensor* res
     cudaDeviceSynchronize();
 }
 
-extern "C" void mul_tensor_wrapper( Tensor* tensor,  Tensor* other,  Tensor* result) {
+/** extern "C" **/ void mul_tensor_wrapper( Tensor* tensor,  Tensor* other,  Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
@@ -1020,7 +1020,7 @@ extern "C" void mul_tensor_wrapper( Tensor* tensor,  Tensor* other,  Tensor* res
     cudaDeviceSynchronize();
 }
 
-extern "C" void div_tensor_wrapper( Tensor* tensor,  Tensor* other,  Tensor* result) {
+/** extern "C" **/ void div_tensor_wrapper( Tensor* tensor,  Tensor* other,  Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
@@ -1033,7 +1033,7 @@ extern "C" void div_tensor_wrapper( Tensor* tensor,  Tensor* other,  Tensor* res
     cudaDeviceSynchronize();
 }
 
-extern "C" void add_scalar_tensor_wrapper(Tensor* tensor, short value, Tensor* result) {
+/** extern "C" **/ void add_scalar_tensor_wrapper(Tensor* tensor, short value, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     short* device_value = NULL;
@@ -1049,7 +1049,7 @@ extern "C" void add_scalar_tensor_wrapper(Tensor* tensor, short value, Tensor* r
     cudaDeviceSynchronize();
 }
 
-extern "C" void sub_scalar_tensor_wrapper(Tensor* tensor, short value, Tensor* result) {
+/** extern "C" **/ void sub_scalar_tensor_wrapper(Tensor* tensor, short value, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     short* device_value = NULL;
@@ -1065,7 +1065,7 @@ extern "C" void sub_scalar_tensor_wrapper(Tensor* tensor, short value, Tensor* r
     cudaDeviceSynchronize();
 }
 
-extern "C" void mul_scalar_tensor_wrapper(Tensor* tensor, short value, Tensor* result) {
+/** extern "C" **/ void mul_scalar_tensor_wrapper(Tensor* tensor, short value, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     short* device_value = NULL;
@@ -1081,7 +1081,7 @@ extern "C" void mul_scalar_tensor_wrapper(Tensor* tensor, short value, Tensor* r
     cudaDeviceSynchronize();
 }
 
-extern "C" void div_scalar_tensor_wrapper(Tensor* tensor, short scalar, Tensor* result) {
+/** extern "C" **/ void div_scalar_tensor_wrapper(Tensor* tensor, short scalar, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     short* device_value = NULL;
@@ -1097,7 +1097,7 @@ extern "C" void div_scalar_tensor_wrapper(Tensor* tensor, short scalar, Tensor* 
     cudaDeviceSynchronize();
 }
 
-extern "C" void transpose_tensor_wrapper(Tensor* tensor, Tensor* result) {
+/** extern "C" **/ void transpose_tensor_wrapper(Tensor* tensor, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
@@ -1110,7 +1110,7 @@ extern "C" void transpose_tensor_wrapper(Tensor* tensor, Tensor* result) {
     cudaDeviceSynchronize();
 }
 
-extern "C" void sum_tensor_wrapper(Tensor* tensor, Tensor* result) {
+/** extern "C" **/ void sum_tensor_wrapper(Tensor* tensor, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
@@ -1123,7 +1123,7 @@ extern "C" void sum_tensor_wrapper(Tensor* tensor, Tensor* result) {
     cudaDeviceSynchronize();
 }
 
-extern "C" void mean_tensor_wrapper(Tensor* tensor, Tensor* result) {
+/** extern "C" **/ void mean_tensor_wrapper(Tensor* tensor, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
@@ -1136,7 +1136,7 @@ extern "C" void mean_tensor_wrapper(Tensor* tensor, Tensor* result) {
     cudaDeviceSynchronize();
 }
 
-extern "C" void max_tensor_wrapper(Tensor* tensor, Tensor* result) {
+/** extern "C" **/ void max_tensor_wrapper(Tensor* tensor, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
@@ -1148,7 +1148,7 @@ extern "C" void max_tensor_wrapper(Tensor* tensor, Tensor* result) {
     }
 }
 
-extern "C" void min_tensor_wrapper(Tensor* tensor, Tensor* result) {
+/** extern "C" **/ void min_tensor_wrapper(Tensor* tensor, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
@@ -1160,7 +1160,7 @@ extern "C" void min_tensor_wrapper(Tensor* tensor, Tensor* result) {
     }
 }
 
-extern "C" void gradient_tensor_wrapper(Tensor* tensor, Tensor* result) {
+/** extern "C" **/ void gradient_tensor_wrapper(Tensor* tensor, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
@@ -1172,7 +1172,7 @@ extern "C" void gradient_tensor_wrapper(Tensor* tensor, Tensor* result) {
     }
 }
 
-extern "C" void gate_tensor_wrapper(Tensor* tensor, Tensor* booleans, Tensor* result) {
+/** extern "C" **/ void gate_tensor_wrapper(Tensor* tensor, Tensor* booleans, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
@@ -1184,7 +1184,7 @@ extern "C" void gate_tensor_wrapper(Tensor* tensor, Tensor* booleans, Tensor* re
     }
 }
 
-extern "C" void vector_resize_tensor_wrapper(Tensor* tensor, Tensor* vectors, Tensor* result) {
+/** extern "C" **/ void vector_resize_tensor_wrapper(Tensor* tensor, Tensor* vectors, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
@@ -1196,7 +1196,7 @@ extern "C" void vector_resize_tensor_wrapper(Tensor* tensor, Tensor* vectors, Te
     }
 }
 
-extern "C" void tensor_enlarge_wrapper(Tensor* tensor, unsigned int scale_factor, Tensor* result) {
+/** extern "C" **/ void tensor_enlarge_wrapper(Tensor* tensor, unsigned int scale_factor, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     unsigned int* device_scale = NULL;
@@ -1211,7 +1211,7 @@ extern "C" void tensor_enlarge_wrapper(Tensor* tensor, unsigned int scale_factor
     }
 }
 
-extern "C" void lesser_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* result) {
+/** extern "C" **/ void lesser_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
@@ -1223,7 +1223,7 @@ extern "C" void lesser_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* res
     }
 }
 
-extern "C" void greater_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* result) {
+/** extern "C" **/ void greater_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
@@ -1235,7 +1235,7 @@ extern "C" void greater_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* re
     }
 }
 
-extern "C" void lesser_equals_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* result) {
+/** extern "C" **/ void lesser_equals_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
@@ -1247,7 +1247,7 @@ extern "C" void lesser_equals_tensor_wrapper(Tensor* tensor, Tensor* other, Tens
     }
 }
 
-extern "C" void greater_equals_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* result) {
+/** extern "C" **/ void greater_equals_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
@@ -1259,7 +1259,7 @@ extern "C" void greater_equals_tensor_wrapper(Tensor* tensor, Tensor* other, Ten
     }
 }
 
-extern "C" void equals_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* result) {
+/** extern "C" **/ void equals_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
