@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include "defines.h"
 #ifdef __cplusplus
-/** extern "C" **/ {
+extern "C" {
     #include "tensor.h"
 }
 #else
