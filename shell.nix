@@ -1,5 +1,5 @@
 let
-  pkgs = import (buildins.fetchGit {
+  pkgs = import (builtins.fetchGit {
     name = "nixos-unstable";
     url = "https://github.com/NixOS/nixpkgs/";
     ref = "refs/heads/nixpkgs-unstable";
