@@ -10,11 +10,11 @@ jobs:
   build:
     runs-on: [self-hosted, linux, x64]
     container:
-      image: octakitten/tensorplus-nix
+      image: octakitten/tensorplus-v01
     steps:
-#      - uses: actions/checkout@v4
-      - run: git config --global --add safe.directory /__w/tensorplus
-      - run: sh nbuild.sh
+      - uses: actions/checkout@v4
+      - run: git config --global --add safe.directory /__w/tensorplus/tensorplus
+      - run: sh build.sh
       - run: zip tensorplus.zip dist/*.whl dist/*.so
       - run: gh release delete nightly -y --cleanup-tag
       - run: gh release create nightly --prerelease --title "Nightly Build" --notes "Automated nightly builds." tensorplus.zip
