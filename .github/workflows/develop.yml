@@ -12,7 +12,7 @@ jobs:
     container:
       image: octakitten/tensorplus-v01
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - run: git config --global --add safe.directory /__w/tensorplus/tensorplus
       - run: sh build.sh
       - run: zip tensorplus.zip dist/*.whl dist/*.so
