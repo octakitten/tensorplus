@@ -7,15 +7,15 @@ let
   }) {};
 in pkgs.mkShell {
   packages = [
-  pkgs.python313
-  pkgs.uv
-  pkgs.gnumake
-  pkgs.cudaPackages.cudatoolkit
-  pkgs.gcc13
-  pkgs.gcc13Stdenv
-  pkgs.bash
-  pkgs.zip
-  pkgs.linuxPackages.nvidia_x11
+    pkgs.python313
+    pkgs.uv
+    pkgs.gnumake
+    pkgs.cudaPackages.cudatoolkit
+    pkgs.gcc13
+    pkgs.gcc13Stdenv
+    pkgs.bash
+    pkgs.zip
+    pkgs.linuxPackages.nvidia_x11
   ];
   shellHook = ''
     export NIXPKGS_ALLOW_UNFREE=1
