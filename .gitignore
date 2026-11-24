@@ -7,3 +7,6 @@ result
 *.whl
 *.o
 *.gz
+.aider*
+.vscode
+aider*
