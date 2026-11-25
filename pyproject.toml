@@ -36,9 +36,7 @@ package = true
 extra = ["dev", "docs"]
 
 [tool.setuptools]
-ext-modules = [
-    {name = "tensorplus", sources = ["lib/tensorplus.c"]}
-    ]
+where = ["src"]
 
 [tool.setuptools.package-data]
 tensorplus = ["*.so"]
