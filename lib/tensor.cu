@@ -6,13 +6,13 @@
 #include <math.h>
 #include <stdbool.h>
 #include "defines.h"
-#ifdef __cplusplus
-extern "C" {
-    #include "tensor.h"
-}
-#else
-    #include "tensor.h/equal"
-#endif
+//#ifdef __cplusplus
+//extern "C" {
+//    #include "tensor.h"
+//}
+//#else
+#include "tensor.h/equal"
+//#endif
 #ifdef __DEBUG__
 #endif
 
