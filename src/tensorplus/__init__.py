@@ -1,1 +1,1 @@
-from . import tensorplus
+from . import tensorplus as _tp
