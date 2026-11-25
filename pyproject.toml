@@ -36,6 +36,10 @@ package = true
 extra = ["dev", "docs"]
 
 [tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["tensorplus"]
+
+[tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]

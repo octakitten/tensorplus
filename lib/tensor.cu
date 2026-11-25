@@ -11,7 +11,7 @@
 //    #include "tensor.h"
 //}
 //#else
-#include "tensor.h/equal"
+#include "tensor.h"
 //#endif
 #ifdef __DEBUG__
 #endif
