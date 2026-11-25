@@ -15,6 +15,7 @@ jobs:
       - uses: actions/checkout@v6
       - run: git config --global --add safe.directory /__w/tensorplus/tensorplus
       - run: sh build.sh
+      - run: unzip -l dist/*.whl | grep .so
       - run: zip tensorplus.zip dist/*.whl dist/*.so
       - run: gh release delete latest -y --cleanup-tag
       - run: gh release create latest tensorplus.zip --title "Latest Build" --notes "Latest alpha build."
