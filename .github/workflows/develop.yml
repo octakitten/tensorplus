@@ -11,8 +11,10 @@ jobs:
     runs-on: [self-hosted, linux, x64]
     container:
       image: octakitten/tensorplus-v01
+      options: --gpus all
     steps:
       - uses: actions/checkout@v6
+      - run: nvidia-smi
       - run: git config --global --add safe.directory /__w/tensorplus/tensorplus
       - run: sh build.sh
       - run: zip tensorplus.zip dist/*.whl dist/*.so

@@ -1,4 +1,4 @@
 make
-rm src/tensorplus/tensorplus.so
-mv tensorplus.so src/tensorplus/tensorplus.so
+rm src/tensorplus/tps.so
+mv tps.so src/tensorplus/tps.so
 uv build --wheel

@@ -18,9 +18,9 @@ CUSOURCES = tensor.cu
 HEADERS = defines.h includes.h
 OBJECTS = tensorplus.o
 CUOBJS = tensor.o
-TARGET = tensorplus.so
-TARGETMAC = tensorplus.dylib
-TARGETWIN = tensorplus.dll
+TARGET = tps.so
+TARGETMAC = tps.dylib
+TARGETWIN = tps.dll
 
 RM= rm -f
 CP= cp -f

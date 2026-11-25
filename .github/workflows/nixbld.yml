@@ -14,6 +14,7 @@ jobs:
       options: --gpus all
     steps:
       - uses: actions/checkout@v6
+      - run: nvidia-smi
       - run: git config --global --add safe.directory /__w/tensorplus/tensorplus
       - run: sh build.sh
       - run: unzip -l dist/*.whl | grep .so
