@@ -39,3 +39,6 @@ extra = ["dev", "docs"]
 ext-modules = [
     {name = "tensorplus", sources = ["lib/tensorplus.c"]}
     ]
+
+[tool.setuptools.package-data]
+tensorplus = ["*.so"]
