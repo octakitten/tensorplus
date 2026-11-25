@@ -11,7 +11,7 @@ def test_zeros():
     tp.zeros(tensor)
     num = -1
     print("Testing get()...")
-    tp.get(tensor, 1, num)
+    num = tp.get(tensor, 1)
     assert num == 0
     return
 
@@ -19,7 +19,7 @@ def test_ones():
     print("Testing ones()...")
     tp.ones(other)
     num = -1
-    tp.get(tensor, 0, num)
+    num = tp.get(tensor, 0)
     assert num == 1
     return
 
@@ -27,7 +27,7 @@ def test_fill():
     print("Testing fill()...")
     tp.fill(result, 2)
     num = -1
-    tp.get(tensor, 0, num)
+    num = tp.get(tensor, 0)
     assert num == 1
     return
 
@@ -35,7 +35,7 @@ def test_add():
     print("Testing add()...")
     tp.add(tensor, other, result)
     num = -1
-    tp.get(result, 0, num)
+    num = tp.get(result, 0)
     assert num == 3
     return
 
@@ -49,7 +49,7 @@ def test_print():
 def test_size():
     print("Testing size()...")
     num = -1
-    tp.size(tensor, num)
+    num = tp.size(tensor)
     assert num == 4
     return
 
