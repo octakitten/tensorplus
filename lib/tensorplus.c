@@ -479,7 +479,7 @@ static PyObject * vector_gate(PyObject * self, PyObject * args) {
     Tensor* vectors = (Tensor*) PyCapsule_GetPointer(vectors_obj, "Tensor");
     Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
     if (tensor == NULL) return NULL;
-    if (other == NULL) return NULL;
+    if (booleans == NULL) return NULL;
     if (vectors == NULL) return NULL;
     if (result == NULL) return NULL;
     vector_gate_wrapper(tensor, booleans, vectors, result);
