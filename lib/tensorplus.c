@@ -617,7 +617,7 @@ static PyObject * equals(PyObject * self, PyObject * args) {
     return Py_BuildValue("");
 }
 
-static PyMethodDef tensorplus_methods[] = {
+static PyMethodDef tps_methods[] = {
     {"create", create, METH_VARARGS, "Creates a tensor"},
     {"destroy", destroy, METH_VARARGS, "Destroys a tensor"},
     {"size", size, METH_VARARGS, "Gets a tensors size"},
@@ -662,14 +662,14 @@ static PyMethodDef tensorplus_methods[] = {
     {NULL, NULL, 0, NULL}
 };
 
-static PyModuleDef tensorplus = {
+static PyModuleDef tps = {
     PyModuleDef_HEAD_INIT,
-    "tensorplus",
+    "tps",
     PyDoc_STR("A module for tensor operations"),
     -1,
-    tensorplus_methods
+    tps_methods
 };
 
-PyMODINIT_FUNC PyInit_tensorplus(void) {
-    return PyModule_Create(&tensorplus);
+PyMODINIT_FUNC PyInit_tps(void) {
+    return PyModule_Create(&tps);
 }
