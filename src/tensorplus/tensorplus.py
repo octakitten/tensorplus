@@ -1,6 +1,3 @@
-'''from . import tensorplus as _tp
-
-
 def create(size):
     return _tp.create(size)
 
@@ -120,4 +117,4 @@ def greater_equals(tensor, other, result):
 
 def equals(tensor, other, result):
     _tp.equals(tensor, other, result)
-'''
+
