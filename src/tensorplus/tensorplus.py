@@ -1,4 +1,4 @@
-from . import tensorplus as _tp
+from . import tps as _tp
 
 def create(size):
     return _tp.create(size)
