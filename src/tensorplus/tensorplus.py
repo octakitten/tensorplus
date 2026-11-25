@@ -1,3 +1,5 @@
+from . import tensorplus as _tp
+
 def create(size):
     return _tp.create(size)
 
