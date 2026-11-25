@@ -1,1 +1,1 @@
-include src/tensorplus/tensorplus.so
+include src/tensorplus/tps.so
