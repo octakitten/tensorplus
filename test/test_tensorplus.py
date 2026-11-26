@@ -339,7 +339,7 @@ def test_vector_mul():
     return
 
 def test_vector_div():
-    print("Testing vector_div...")-
+    print("Testing vector_div...")
     tp.set(tensor, 0, 4)
     tp.set(tensor, 1, 6)
     tp.set(tensor, 2, 8)
