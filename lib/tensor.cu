@@ -76,10 +76,10 @@ int get_device_dim_remainder(unsigned int size);
     tensor = NULL;
 }
 
-/** extern "C" **/ void get_tensor_size_wrapper(Tensor* tensor, unsigned int size) {
-    cudaError_t err = cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
+void get_tensor_size_wrapper(Tensor* tensor, unsigned int* size) {
+    cudaError_t err = cudaMemcpy(size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     cudaDeviceSynchronize();
-    printf("Printing the size from get_tensor_size_wrapper() function: %d\n", size);
+    //printf("Printing the size from get_tensor_size_wrapper() function: %d\n", size);
 }
 
 void set_cpu_to_device_tensor(Tensor* tensor) {
