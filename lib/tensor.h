@@ -45,7 +45,7 @@ Tensor* create_tensor(unsigned int size);
 void destroy_tensor(Tensor* tensor);
 Tensor* create_device_tensor(unsigned int size);
 void destroy_device_tensor(Tensor* tensor);
-void get_tensor_size_wrapper(Tensor* tensor, unsigned int size);
+void get_tensor_size_wrapper(Tensor* tensor, unsigned int* size);
 void zeros_tensor_wrapper( Tensor* tensor);
 void ones_tensor_wrapper( Tensor* tensor);
 void print_tensor_wrapper( Tensor* tensor);
