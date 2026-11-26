@@ -26,7 +26,7 @@ static PyObject * destroy(PyObject * self, PyObject * args) {
 static PyObject * size(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     unsigned int size;
-    if (!PyArg_ParseTuple(args, "OI", &tensor_obj, &size)) {
+    if (!PyArg_ParseTuple(args, "O", &tensor_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");

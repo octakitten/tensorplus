@@ -19,13 +19,13 @@ def test_ones():
     print("Testing ones()...")
     tp.ones(other)
     num = -1
-    num = tp.get(tensor, 0)
+    num = tp.get(other, 0)
     assert num == 1
     return
 
 def test_fill():
     print("Testing fill()...")
-    tp.fill(result, 2)
+    tp.fill(tensor, 2)
     num = -1
     num = tp.get(tensor, 0)
     assert num == 1
