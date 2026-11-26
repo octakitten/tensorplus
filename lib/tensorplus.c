@@ -298,44 +298,40 @@ static PyObject * transpose(PyObject * self, PyObject * args) {
 
 static PyObject * sum(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    PyObject * result_obj;
-    if (!PyArg_ParseTuple(args, "OO", &tensor_obj, &result_obj)) {
+    short result;
+    if (!PyArg_ParseTuple(args, "O", &tensor_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
-    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
     if (tensor == NULL) return NULL;
-    if (result == NULL) return NULL;
-    sum_tensor_wrapper(tensor, result);
-    return Py_BuildValue("");
+    sum_tensor_wrapper(tensor, &result);
+    return PyLong_FromLong(result);
 }
 
 static PyObject * max(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    PyObject * result_obj;
-    if (!PyArg_ParseTuple(args, "OO", &tensor_obj, &result_obj)) {
+    short result;
+    if (!PyArg_ParseTuple(args, "O", &tensor_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
-    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
     if (tensor == NULL) return NULL;
     if (result == NULL) return NULL;
-    max_tensor_wrapper(tensor, result);
-    return Py_BuildValue("");
+    max_tensor_wrapper(tensor, &result);
+    return PyLong_FromLong(result);
 }
 
 static PyObject * min(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    PyObject * result_obj;
-    if (!PyArg_ParseTuple(args, "OO", &tensor_obj, &result_obj)) {
+    short result;
+    if (!PyArg_ParseTuple(args, "O", &tensor_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
-    Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
     if (tensor == NULL) return NULL;
     if (result == NULL) return NULL;
-    min_tensor_wrapper(tensor, result);
-    return Py_BuildValue("");
+    min_tensor_wrapper(tensor, &result);
+    return PyLong_FromLong(result);
 }
 
 static PyObject * gradient(PyObject * self, PyObject * args) {

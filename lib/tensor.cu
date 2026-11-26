@@ -198,7 +198,11 @@ __global__
 void vector_sort_tensor(unsigned int* size, short* src, short* vectors, short* result) {
     unsigned int index = threadIdx.x;
     if (index < size[0]) {
-        result[index] = src[vectors[index]];
+	if (vectors[index] < size[0]) {
+            result[index] = src[vectors[index]];
+	} else {
+	    result[index] = src[(vectors[index] % size[0])];
+	}
     }
 }
 
@@ -214,7 +218,10 @@ void vector_add_tensor(unsigned int* size, short* src, short* other, short* vect
         tmp_src[block_index] = src[index];
         tmp_other[block_index] = other[index];
         tmp_vects[block_index] = vectors[index];
-        tmp_result[block_index] = tmp_src[block_index] + tmp_other[tmp_vects[block_index]];
+	if (vectors[index] < size[0]) {
+            tmp_result[block_index] = tmp_src[block_index] + tmp_other[tmp_vects[block_index]];
+	} else {
+            tmp_result[block_index] = tmp_src[block_index] + tmp_other[(tmp_vects[block_index] % size[0])];
         
         __syncthreads();
         result[index] = tmp_result[0];
@@ -233,7 +240,10 @@ void vector_sub_tensor(unsigned int* size, short* src, short* other, short* vect
         tmp_src[block_index] = src[index];
         tmp_other[block_index] = other[index];
         tmp_vects[block_index] = vectors[index];
-        tmp_result[block_index] = tmp_src[block_index] - tmp_other[tmp_vects[block_index]];
+	if (vectors[index] < size[0]) {
+            tmp_result[block_index] = tmp_src[block_index] - tmp_other[tmp_vects[block_index]];
+	} else {
+            tmp_result[block_index] = tmp_src[block_index] - tmp_other[(tmp_vects[block_index] % size[0])];
         
         __syncthreads();
         result[index] = tmp_result[0];
@@ -252,8 +262,11 @@ void vector_mul_tensor(unsigned int* size, short* src, short* other, short* vect
         tmp_src[block_index] = src[index];
         tmp_other[block_index] = other[index];
         tmp_vects[block_index] = vectors[index];
-        tmp_result[block_index] = tmp_src[block_index] * tmp_other[tmp_vects[block_index]];
-        
+	if (vectors[index] < size[0]) {
+            tmp_result[block_index] = tmp_src[block_index] * tmp_other[tmp_vects[block_index]];
+	} else {
+            tmp_result[block_index] = tmp_src[block_index] * tmp_other[(tmp_vects[block_index] % size[0])];
+	}
         __syncthreads();
         result[index] = tmp_result[0];
     }
@@ -271,8 +284,11 @@ void vector_div_tensor(unsigned int* size, short* src, short* other, short* vect
         tmp_src[block_index] = src[index];
         tmp_other[block_index] = other[index];
         tmp_vects[block_index] = vectors[index];
-        tmp_result[block_index] = tmp_src[block_index] / tmp_other[tmp_vects[block_index]];
-        
+	if (vectors[index] < size[0]) {
+            tmp_result[block_index] = tmp_src[block_index] / tmp_other[tmp_vects[block_index]];
+	} else {
+            tmp_result[block_index] = tmp_src[block_index] / tmp_other[(tmp_vects[block_index] % size[0])];
+	}
         __syncthreads();
         result[index] = tmp_result[0];
     }
@@ -290,9 +306,15 @@ void vector_gate_tensor(unsigned int* size, short* src, short* booleans, short* 
         tmp_src[block_index] = src[index];
         tmp_bools[block_index] = booleans[index];
         tmp_vects[block_index] = vectors[index];
-        if (tmp_bools[block_index] == 1) {
-            tmp_result[block_index] = tmp_src[tmp_vects[block_index]];
-        }
+	if (vectors[index] < size[0]) {
+            if (tmp_bools[block_index] == 1) {
+                tmp_result[block_index] = tmp_src[tmp_vects[block_index]];
+            }
+	} else {
+            if (tmp_bools[block_index] == 1) {
+                tmp_result[block_index] = tmp_src[(tmp_vects[block_index] % size[0])];
+            }
+	}
         __syncthreads();
         result[index] = tmp_result[0];
     }
@@ -558,9 +580,12 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
             extern __shared__ short tmp[];
             unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
             unsigned int block_index = threadIdx.x;
-            if (index < size[0]) {
+            if (index < size[0] - 1) {
                 result[index] = src[index + 1] - src[index];
             }
+	    else if (index == size[0] - 1) {
+		    result[index] = src[0] - src[index];
+	    }
         }
 
         __global__
@@ -709,7 +734,11 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
             unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
             unsigned int block_index = threadIdx.x;
             if (index < size_large[0]) {
-                result[index] = src[vectors[index]];
+		if (vectors[index] < size_small[0]) {
+                    result[index] = src[vectors[index]];
+		} else {
+                    result[index] = src[(vectors[index] % size_small[0])];
+		}
             }
         }
 
@@ -737,9 +766,9 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
   unsigned int block_index = threadIdx.x;
   if (threadIdx.x < size[0]) {
     if (data[threadIdx.x] == 0) {
-      result[threadIdx.x] = 0;
-    } else {
       result[threadIdx.x] = 1;
+    } else {
+      result[threadIdx.x] = 0;
     }
   }
 }
