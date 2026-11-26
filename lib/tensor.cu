@@ -385,6 +385,8 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
             unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
             unsigned int block_index = threadIdx.x;
             if (index < size[0]) {
+		tmp1[block_index] = data1[index];
+		tmp2[block_index] = data2[index];
                 tmp1[block_index] = tmp1[block_index] + tmp2[block_index];
             }
             __syncthreads();
@@ -398,6 +400,8 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
             unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
             unsigned int block_index = threadIdx.x;
             if (index < size[0]) {
+		tmp1[block_index] = data1[index];
+		tmp2[block_index] = data2[index];
                 tmp1[block_index] = tmp1[block_index] - tmp2[block_index];
             }
             __syncthreads();
@@ -411,6 +415,8 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
             unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
             unsigned int block_index = threadIdx.x;
             if (index < size[0]) {
+		tmp1[block_index] = data1[index];
+		tmp2[block_index] = data2[index];
                 tmp1[block_index] = tmp1[block_index] * tmp2[block_index];
             }
             __syncthreads();
@@ -424,6 +430,8 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
             unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
             unsigned int block_index = threadIdx.x;
             if (index < size[0]) {
+		tmp1[block_index] = data1[index];
+		tmp2[block_index] = data2[index];
                 tmp1[block_index] = tmp1[block_index] / tmp2[block_index];
             }
             __syncthreads();
@@ -437,6 +445,7 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
             unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
             unsigned int block_index = threadIdx.x;
             if (index < size[0]) {
+		tmp[block_index] = src[index];
                 tmp[block_index] = tmp[block_index] + tmp_value;
             }
             __syncthreads();
@@ -450,6 +459,7 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
             unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
             unsigned int block_index = threadIdx.x;
             if (index < size[0]) {
+		tmp[block_index] = src[index];
                 tmp[block_index] = tmp[block_index] - tmpval;
             }
             __syncthreads();
@@ -463,6 +473,7 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
             unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
             unsigned int block_index = threadIdx.x;
             if (index < size[0]) {
+		tmp[block_index] = src[index];
                 tmp[block_index] = tmp[block_index] * tmpval;
             }
             __syncthreads();
@@ -476,6 +487,7 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
             unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
             unsigned int block_index = threadIdx.x;
             if (index < size[0]) {
+		tmp[block_index] = src[index];
                 tmp[block_index] = tmp[block_index] / tmpval;
             }
             __syncthreads();
