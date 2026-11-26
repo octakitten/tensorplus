@@ -246,9 +246,9 @@ def test_vector_sort():
     num4 = tp.get(result, 3)
     tp.vector_sort(tensor, other, result)
     assert num == 3
-    assert num2 = 2
-    assert num3 = 1
-    assert num4 = 0
+    assert num2 == 2
+    assert num3 == 1
+    assert num4 == 0
     return
 
 def test_vector_add():
