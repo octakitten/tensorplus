@@ -222,7 +222,7 @@ void vector_add_tensor(unsigned int* size, short* src, short* other, short* vect
             tmp_result[block_index] = tmp_src[block_index] + tmp_other[tmp_vects[block_index]];
 	} else {
             tmp_result[block_index] = tmp_src[block_index] + tmp_other[(tmp_vects[block_index] % size[0])];
-        
+	}
         __syncthreads();
         result[index] = tmp_result[0];
     }
@@ -244,7 +244,7 @@ void vector_sub_tensor(unsigned int* size, short* src, short* other, short* vect
             tmp_result[block_index] = tmp_src[block_index] - tmp_other[tmp_vects[block_index]];
 	} else {
             tmp_result[block_index] = tmp_src[block_index] - tmp_other[(tmp_vects[block_index] % size[0])];
-        
+	}
         __syncthreads();
         result[index] = tmp_result[0];
     }
