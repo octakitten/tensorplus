@@ -61,7 +61,7 @@ void sub_scalar_tensor_wrapper( Tensor* tensor, short scalar,  Tensor* result);
 void mul_scalar_tensor_wrapper( Tensor* tensor, short scalar,  Tensor* result);
 void div_scalar_tensor_wrapper( Tensor* tensor, short scalar,  Tensor* result);
 void transpose_tensor_wrapper( Tensor* tensor,  Tensor* result);
-void sum_tensor_wrapper( Tensor* tensor,  Tensor* result);
+void sum_tensor_wrapper( Tensor* tensor,  short* result);
 void max_tensor_wrapper( Tensor* tensor,  Tensor* result);
 void min_tensor_wrapper( Tensor* tensor,  Tensor* result);
 void gradient_tensor_wrapper( Tensor* tensor,  Tensor* result);
