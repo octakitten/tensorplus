@@ -25,7 +25,7 @@ static PyObject * destroy(PyObject * self, PyObject * args) {
 
 static PyObject * size(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    unsigned int size = -1;
+    unsigned int size = 0;
     if (!PyArg_ParseTuple(args, "O", &tensor_obj)) {
         return NULL;
     }
