@@ -316,7 +316,6 @@ static PyObject * max(PyObject * self, PyObject * args) {
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
     if (tensor == NULL) return NULL;
-    if (result == NULL) return NULL;
     max_tensor_wrapper(tensor, &result);
     return PyLong_FromLong(result);
 }
@@ -329,7 +328,6 @@ static PyObject * min(PyObject * self, PyObject * args) {
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
     if (tensor == NULL) return NULL;
-    if (result == NULL) return NULL;
     min_tensor_wrapper(tensor, &result);
     return PyLong_FromLong(result);
 }
