@@ -310,7 +310,7 @@ static PyObject * sum(PyObject * self, PyObject * args) {
 
 static PyObject * max(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    short result;
+    short result = 0;
     if (!PyArg_ParseTuple(args, "O", &tensor_obj)) {
         return NULL;
     }
@@ -322,7 +322,7 @@ static PyObject * max(PyObject * self, PyObject * args) {
 
 static PyObject * min(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    short result;
+    short result = 0;
     if (!PyArg_ParseTuple(args, "O", &tensor_obj)) {
         return NULL;
     }
