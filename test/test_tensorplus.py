@@ -28,7 +28,7 @@ def test_fill():
     tp.fill(tensor, 2)
     num = -1
     num = tp.get(tensor, 0)
-    assert num == 1
+    assert num == 2
     return
 
 def test_add():
