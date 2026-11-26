@@ -25,13 +25,13 @@ static PyObject * destroy(PyObject * self, PyObject * args) {
 
 static PyObject * size(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    unsigned int size = 0;
+    unsigned int* size = (unsigned int*) malloc(sizeof(unsigned int));
     if (!PyArg_ParseTuple(args, "O", &tensor_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
     if (tensor == NULL) return NULL;
-    get_tensor_size_wrapper(tensor, size*);
+    get_tensor_size_wrapper(tensor, size);
     return PyLong_FromUnsignedLong(size);
 }
 
