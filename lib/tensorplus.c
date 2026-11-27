@@ -132,7 +132,7 @@ static PyObject * set(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     unsigned int* index = (unsigned int*) malloc(sizeof(unsigned int));
     short* value = (short*) malloc(sizeof(short));
-    if (!PyArg_ParseTuple(args, "OIh", &tensor_obj, &index, &value)) {
+    if (!PyArg_ParseTuple(args, "OIh", &tensor_obj, index, value)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
