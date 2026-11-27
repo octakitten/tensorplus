@@ -915,13 +915,13 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
     //printf("Value at index 0: %d\n", val);
 }
 
-/** extern "C" **/ void fill_tensor_wrapper( Tensor* tensor, short value) {
+/** extern "C" **/ void fill_tensor_wrapper( Tensor* tensor, short* value) {
     unsigned int size = 0;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     //printf("Size: %d\n", size);
     short* device_value;
     cudaMalloc((void**) &device_value, sizeof(short));
-    cudaMemcpy(device_value, &value, sizeof(short), cudaMemcpyHostToDevice);
+    cudaMemcpy(device_value, value, sizeof(short), cudaMemcpyHostToDevice);
     cudaError_t err = cudaDeviceSynchronize();
     //printf("Error: %s\n", cudaGetErrorString(err));
     //printf("Size: %d\n", size);
@@ -938,18 +938,18 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
     //printf("Error: %s\n", cudaGetErrorString(err));
 }
 
-/** extern "C" **/ void set_tensor_wrapper( Tensor* tensor, unsigned int index, short value) {
+/** extern "C" **/ void set_tensor_wrapper( Tensor* tensor, unsigned int* index, short* value) {
     //printf("Retrieving size...");
     unsigned int size = 0;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     //printf("Setting device index...");
     unsigned int* device_index;
     cudaMalloc((void**) &device_index, sizeof(unsigned int));
-    cudaMemcpy(device_index, &index, sizeof(unsigned int), cudaMemcpyHostToDevice);
+    cudaMemcpy(device_index, index, sizeof(unsigned int), cudaMemcpyHostToDevice);
     //printf("Setting device value...");
     short* device_value;
     cudaMalloc((void**) &device_value, sizeof(short));
-    cudaMemcpy(device_value, &value, sizeof(short), cudaMemcpyHostToDevice);
+    cudaMemcpy(device_value, value, sizeof(short), cudaMemcpyHostToDevice);
     
     //printf("Calling device function...");
     if (index < size) {
@@ -963,7 +963,7 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
     cudaFree(device_value);
 }
 
-/** extern "C" **/ void get_tensor_value_wrapper( Tensor* tensor, unsigned int index, short* value) {
+/** extern "C" **/ void get_tensor_value_wrapper( Tensor* tensor, unsigned int* index, short* value) {
 
 
     cudaError_t err = cudaGetLastError();
@@ -978,7 +978,7 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
     cudaMalloc((void**) &device_index, sizeof(unsigned int));
     //err = cudaGetLastError();
     //printf("Error: %s\n", cudaGetErrorString(err));
-    cudaMemcpy(device_index, &index, sizeof(unsigned int), cudaMemcpyHostToDevice);
+    cudaMemcpy(device_index, index, sizeof(unsigned int), cudaMemcpyHostToDevice);
     //err = cudaGetLastError();
     //printf("Error: %s\n", cudaGetErrorString(err));
     //printf("Setting device_value...\n");
@@ -1074,12 +1074,12 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
     cudaDeviceSynchronize();
 }
 
-/** extern "C" **/ void add_scalar_tensor_wrapper(Tensor* tensor, short value, Tensor* result) {
+/** extern "C" **/ void add_scalar_tensor_wrapper(Tensor* tensor, short* value, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     short* device_value = NULL;
     cudaMalloc((void**) device_value, sizeof(short));
-    cudaMemcpy(&device_value, &value, sizeof(short), cudaMemcpyHostToDevice);
+    cudaMemcpy(&device_value, value, sizeof(short), cudaMemcpyHostToDevice);
     if (size / THREADS_PER_BLOCK == 0) {
         add_scalar_tensor<<<1, size>>>(tensor->size, tensor->data, device_value, result->data);
     } else if (size / THREADS_PER_BLOCK < BLOCKS_MAXIMUM) {
@@ -1090,12 +1090,12 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
     cudaDeviceSynchronize();
 }
 
-/** extern "C" **/ void sub_scalar_tensor_wrapper(Tensor* tensor, short value, Tensor* result) {
+/** extern "C" **/ void sub_scalar_tensor_wrapper(Tensor* tensor, short* value, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     short* device_value = NULL;
     cudaMalloc((void**) device_value, sizeof(short));
-    cudaMemcpy(&device_value, &value, sizeof(short), cudaMemcpyHostToDevice);
+    cudaMemcpy(&device_value, value, sizeof(short), cudaMemcpyHostToDevice);
     if (size / THREADS_PER_BLOCK == 0) {
         sub_scalar_tensor<<<1, size>>>(tensor->size, tensor->data, device_value, result->data);
     } else if (size / THREADS_PER_BLOCK < BLOCKS_MAXIMUM) {
@@ -1106,12 +1106,12 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
     cudaDeviceSynchronize();
 }
 
-/** extern "C" **/ void mul_scalar_tensor_wrapper(Tensor* tensor, short value, Tensor* result) {
+/** extern "C" **/ void mul_scalar_tensor_wrapper(Tensor* tensor, short* value, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     short* device_value = NULL;
     cudaMalloc((void**) device_value, sizeof(short));
-    cudaMemcpy(&device_value, &value, sizeof(short), cudaMemcpyHostToDevice);
+    cudaMemcpy(&device_value, value, sizeof(short), cudaMemcpyHostToDevice);
     if (size / THREADS_PER_BLOCK == 0) {
         mul_scalar_tensor<<<1, size>>>(tensor->size, tensor->data, device_value, result->data);
     } else if (size / THREADS_PER_BLOCK < BLOCKS_MAXIMUM) {
@@ -1122,12 +1122,12 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
     cudaDeviceSynchronize();
 }
 
-/** extern "C" **/ void div_scalar_tensor_wrapper(Tensor* tensor, short scalar, Tensor* result) {
+/** extern "C" **/ void div_scalar_tensor_wrapper(Tensor* tensor, short* scalar, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     short* device_value = NULL;
     cudaMalloc((void**) device_value, sizeof(short));
-    cudaMemcpy(&device_value, &scalar, sizeof(short), cudaMemcpyHostToDevice);
+    cudaMemcpy(&device_value, scalar, sizeof(short), cudaMemcpyHostToDevice);
     if (size / THREADS_PER_BLOCK == 0) {
         div_scalar_tensor<<<1, size>>>(tensor->size, tensor->data, device_value, result->data);
     } else if (size / THREADS_PER_BLOCK < BLOCKS_MAXIMUM) {
@@ -1151,7 +1151,7 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
     cudaDeviceSynchronize();
 }
 
-/** extern "C" **/ void sum_tensor_wrapper(Tensor* tensor, Tensor* result) {
+/** extern "C" **/ void sum_tensor_wrapper(Tensor* tensor, short* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
@@ -1177,7 +1177,7 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
     cudaDeviceSynchronize();
 }
 
-/** extern "C" **/ void max_tensor_wrapper(Tensor* tensor, Tensor* result) {
+/** extern "C" **/ void max_tensor_wrapper(Tensor* tensor, short* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
@@ -1189,7 +1189,7 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
     }
 }
 
-/** extern "C" **/ void min_tensor_wrapper(Tensor* tensor, Tensor* result) {
+/** extern "C" **/ void min_tensor_wrapper(Tensor* tensor, short* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
