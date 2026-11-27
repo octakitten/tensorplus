@@ -307,7 +307,7 @@ static PyObject * sum(PyObject * self, PyObject * args) {
     sum_tensor_wrapper(tensor, result);
     return PyLong_FromLong(result[0]);
 }
-
+/**
 static PyObject * max(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     short* result = (short*) malloc(sizeof(short));
@@ -331,6 +331,7 @@ static PyObject * min(PyObject * self, PyObject * args) {
     min_tensor_wrapper(tensor, result);
     return PyLong_FromLong(result[0]);
 }
+**/
 
 static PyObject * gradient(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
@@ -635,8 +636,8 @@ static PyMethodDef tps_methods[] = {
     {"div_scalar", div_scalar, METH_VARARGS, "Divides a tensor by a scalar"},
     {"transpose", transpose, METH_VARARGS, "Transposes a tensor"},
     {"sum", sum, METH_VARARGS, "Computes the sum of a tensor"},
-    {"max", max, METH_VARARGS, "Finds the maximum value in a tensor"},
-    {"min", min, METH_VARARGS, "Finds the minimum value in a tensor"},
+    //{"max", max, METH_VARARGS, "Finds the maximum value in a tensor"},
+    //{"min", min, METH_VARARGS, "Finds the minimum value in a tensor"},
     {"gradient", gradient, METH_VARARGS, "Computes the gradient of a tensor"},
     {"gate", gate, METH_VARARGS, "Gates a tensor based on a boolean tensor"},
     {"vector_sort", vector_sort, METH_VARARGS, "Sorts a tensor based on a vector tensor"},

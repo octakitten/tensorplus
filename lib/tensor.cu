@@ -49,8 +49,8 @@ __global__ void div_scalar_tensor(unsigned int* size, short* src, short* value, 
 __global__ void transpose_tensor(unsigned int* size, short* src, short* result);
 __global__ void sum_tensor(unsigned int* size, short* src, short* result);
 __global__ void mean_tensor(unsigned int* size, short* src, short* result);
-__global__ void max_tensor(unsigned int* size, short* src, short* result);
-__global__ void min_tensor(unsigned int* size, short* src, short* result);
+//__global__ void max_tensor(unsigned int* size, short* src, short* result);
+//__global__ void min_tensor(unsigned int* size, short* src, short* result);
 __global__ void gradient_tensor(unsigned int* size, short* src, short* result);
 __global__ void gate_tensor(unsigned int* size, short* src, short* bools, short* result);
 bool check_if_cuda_tensor(Tensor* tensor);
@@ -468,6 +468,7 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
             unsigned int block_index = threadIdx.x;
             if (index < size[0]) {
 		tmp[block_index] = src[index];
+                tmp_value = value[0];
                 tmp[block_index] = tmp[block_index] + tmp_value;
             }
             __syncthreads();
@@ -482,6 +483,7 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
             unsigned int block_index = threadIdx.x;
             if (index < size[0]) {
 		tmp[block_index] = src[index];
+                tmpval = value[0];
                 tmp[block_index] = tmp[block_index] - tmpval;
             }
             __syncthreads();
@@ -496,6 +498,7 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
             unsigned int block_index = threadIdx.x;
             if (index < size[0]) {
 		tmp[block_index] = src[index];
+                tmpval = value[0];
                 tmp[block_index] = tmp[block_index] * tmpval;
             }
             __syncthreads();
@@ -510,6 +513,7 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
             unsigned int block_index = threadIdx.x;
             if (index < size[0]) {
 		tmp[block_index] = src[index];
+                tmpval = value[0];
                 tmp[block_index] = tmp[block_index] / tmpval;
             }
             __syncthreads();
@@ -533,31 +537,40 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
         __global__
         void sum_tensor( unsigned int* size, short* src, short* result) {
             extern __shared__ short tmp[];
+            extern __shared__ short tmpval = result[0];
             unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
             unsigned int block_index = threadIdx.x;
             if (index < size[0]) {
-                result[0] += src[index];
+                tmp[block_index] = src[index]
+                tmpval += tmp[block_index];
             }
+            __syncthreads();
+            result[0] = tmpval;
         }
 
         __global__
         void mean_tensor( unsigned int* size, short* src, short* result) {
             extern __shared__ short tmp[];
+            extern __shared__ short tmpval = result[0];
             unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
             unsigned int block_index = threadIdx.x;
             if (index < size[0]) {
-                result[0] += src[index];
+                tmp[block_index] = src[index]
+                tmpval += tmp[block_index];
             }
-            result[0] /= size[0];
+            __syncthreads();
+            result[0] = tmpval / size[0];
         }
-
+/**
         __global__
         void max_tensor(unsigned int* size, short* src, short* result) {
             extern __shared__ short tmp[];
+            extern __shared__ short tmpval = result[0];
             unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
             unsigned int block_index = threadIdx.x;
             if (index < size[0]) {
-                if (src[index] > result[0]) {
+                tmp[block_index] = src[index];
+                if (tmp[block_index] > ) {
                     result[0] = src[index];
                 }
             }
@@ -574,6 +587,7 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
                 }
             }
         }
+**/
 
         __global__
         void gradient_tensor(unsigned int* size, short* src, short* result) {
@@ -773,12 +787,12 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
   }
 }
 
-/** extern "C" **/ void negate_tensor_wrapper(Tensor* tensor, Tensor* result) {
+** extern "C" **/ void negate_tensor_wrapper(Tensor* tensor, Tensor* result) {
     unsigned int* size = (unsigned int*) malloc(sizeof(unsigned int));
     cudaMemcpy(size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size[0] < THREADS_PER_BLOCK) {
         negate_tensor<<<1, size[0], THREADS_PER_BLOCK * sizeof(short)>>>(tensor->size, tensor->data, result->data);
-    } else if (size[0] / THREADS_PER_BLOCK < BLOCKS_MAXIMUM) {
+    } else if (size[0] / THREADS_PER_BLOCK < BLOCKS_AXIMUM) {
         negate_tensor<<<get_device_dim(size[0]), THREADS_PER_BLOCK, THREADS_PER_BLOCK * sizeof(short)>>>(tensor->size, tensor->data, result->data);
     } else {
         negate_tensor<<<BLOCKS_MAXIMUM, THREADS_PER_BLOCK, THREADS_PER_BLOCK * sizeof(short)>>>(tensor->size, tensor->data, result->data);
@@ -1154,30 +1168,39 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
 /** extern "C" **/ void sum_tensor_wrapper(Tensor* tensor, short* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
+    result[0] = 0;
+    short* device_result = NULL;
+    cudaMalloc((void**) device_result, sizeof(short));
+    cudaMemcpy(&device_result, result, sizeof(short), cudaMemcpyHostToDevice);
     if (size / THREADS_PER_BLOCK == 0) {
-        sum_tensor<<<1, size>>>(tensor->size, tensor->data, result);
+        sum_tensor<<<1, size>>>(tensor->size, tensor->data, device_result);
     } else if (size / THREADS_PER_BLOCK < BLOCKS_MAXIMUM) {
-        sum_tensor<<<get_device_dim(size), THREADS_PER_BLOCK>>>(tensor->size, tensor->data, result);
+        sum_tensor<<<get_device_dim(size), THREADS_PER_BLOCK>>>(tensor->size, tensor->data, device_result);
     } else {
-        sum_tensor<<<BLOCKS_MAXIMUM, THREADS_PER_BLOCK>>>(tensor->size, tensor->data, result);
+        sum_tensor<<<BLOCKS_MAXIMUM, THREADS_PER_BLOCK>>>(tensor->size, tensor->data, device_result);
     }
     cudaDeviceSynchronize();
 }
 
-/** extern "C" **/ void mean_tensor_wrapper(Tensor* tensor, Tensor* result) {
+/** extern "C" **/ void mean_tensor_wrapper(Tensor* tensor, short* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
+    result[0] = 0;
+    short* device_result = NULL;
+    cudaMalloc((void**) device_result, sizeof(short));
+    cudaMemcpy(&device_result, result, sizeof(short), cudaMemcpyHostToDevice);
     if (size / THREADS_PER_BLOCK == 0) {
-        mean_tensor<<<1, size>>>(tensor->size, tensor->data, result->data);
+        mean_tensor<<<1, size>>>(tensor->size, tensor->data, device_result);
     } else if (size / THREADS_PER_BLOCK < BLOCKS_MAXIMUM) {
-        mean_tensor<<<get_device_dim(size), THREADS_PER_BLOCK>>>(tensor->size, tensor->data, result->data);
+        mean_tensor<<<get_device_dim(size), THREADS_PER_BLOCK>>>(tensor->size, tensor->data, device_result);
     } else {
-        mean_tensor<<<BLOCKS_MAXIMUM, THREADS_PER_BLOCK>>>(tensor->size, tensor->data, result->data);
+        mean_tensor<<<BLOCKS_MAXIMUM, THREADS_PER_BLOCK>>>(tensor->size, tensor->data, device_result);
     }
     cudaDeviceSynchronize();
 }
 
-/** extern "C" **/ void max_tensor_wrapper(Tensor* tensor, short* result) {
+
+/** extern "C"  void max_tensor_wrapper(Tensor* tensor, short* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
@@ -1189,7 +1212,7 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
     }
 }
 
-/** extern "C" **/ void min_tensor_wrapper(Tensor* tensor, short* result) {
+ extern "C"  void min_tensor_wrapper(Tensor* tensor, short* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
@@ -1200,6 +1223,7 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
         min_tensor<<<BLOCKS_MAXIMUM, THREADS_PER_BLOCK>>>(tensor->size, tensor->data, result);
     }
 }
+**/
 
 /** extern "C" **/ void gradient_tensor_wrapper(Tensor* tensor, Tensor* result) {
     unsigned int size;

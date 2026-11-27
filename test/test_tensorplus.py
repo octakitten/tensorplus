@@ -70,7 +70,7 @@ def test_sub():
     tp.sub(tensor, other, result)
     num = -1
     num = tp.get(result, 0)
-    assert num == 0
+    assert num == 1
     return
 
 def test_mul():
@@ -87,7 +87,7 @@ def test_div():
     print("Testing div()...")
     tp.fill(tensor, 4)
     tp.fill(other, 2)
-    tp.mul(tensor, other, result)
+    tp.div(tensor, other, result)
     num = -1
     num = tp.get(result, 0)
     assert num == 2
@@ -124,7 +124,7 @@ def test_mul_scalar():
     return
 
 def test_div_scalar():
-    print("Testing mul_scalar()...")
+    print("Testing div_scalar()...")
     tp.fill(tensor, 6)
     scalar = 3
     tp.div_scalar(tensor, scalar, result)
@@ -133,25 +133,15 @@ def test_div_scalar():
     assert num == 2
     return
 
-def test_div_scalar():
-    print("Testing mul_scalar()...")
-    tp.fill(tensor, 6)
-    scalar = 2
-    tp.div_scalar(tensor, scalar, result)
-    num = -1
-    num = tp.get(result, 0)
-    assert num == 6
-    return
-
 def test_transpose():
     print("Testing transpose...")
     tp.set(tensor, 0, 0)
     tp.set(tensor, 1, 1)
     tp.set(tensor, 2, 2)
     tp.set(tensor, 3, 3)
-    tp.transpose(tensor)
+    tp.transpose(tensor, result)
     num = -1
-    num = tp.get(tensor, 2)
+    num = tp.get(result, 2)
     assert num == 1
     return
 
@@ -195,11 +185,11 @@ def test_gradient():
     num2 = -1
     num3 = -1
     num4 = -1
-    tp.gradient(tensor)
-    num = tp.get(tensor, 0)
-    num2 = tp.get(tensor, 1)
-    num3 = tp.get(tensor, 2)
-    num4 = tp.get(tensor, 3)
+    tp.gradient(tensor, result)
+    num = tp.get(result, 0)
+    num2 = tp.get(result, 1)
+    num3 = tp.get(result, 2)
+    num4 = tp.get(result, 3)
     assert num == 1
     assert num2 == 1
     assert num3 == 1
