@@ -119,7 +119,7 @@ static PyObject * printtn(PyObject * self, PyObject * args) {
 static PyObject * fill(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     short* value = (short*) malloc(sizeof(short));
-    if (!PyArg_ParseTuple(args, "Oh", &tensor_obj, &value)) {
+    if (!PyArg_ParseTuple(args, "Oh", &tensor_obj, value)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
@@ -226,7 +226,7 @@ static PyObject * add_scalar(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     short* scalar = (short*) malloc(sizeof(short));
     PyObject * result_obj;
-    if (!PyArg_ParseTuple(args, "OhO", &tensor_obj, &scalar, &result_obj)) {
+    if (!PyArg_ParseTuple(args, "OhO", &tensor_obj, scalar, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
