@@ -527,7 +527,7 @@ def test_greater_equals():
     return
 
 
-tp.destroy(tensor)
-tp.destroy(other)
-tp.destroy(vectors)
-tp.destroy(result)
+#tp.destroy(tensor)
+#tp.destroy(other)
+#tp.destroy(vectors)
+#tp.destroy(result)

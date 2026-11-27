@@ -145,7 +145,7 @@ static PyObject * get(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     unsigned int* index = (unsigned int*) malloc(sizeof(unsigned int));
     short* value = (short*) malloc(sizeof(short));
-    if (!PyArg_ParseTuple(args, "OI", &tensor_obj, &index)) {
+    if (!PyArg_ParseTuple(args, "OI", &tensor_obj, index)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
@@ -241,7 +241,7 @@ static PyObject * sub_scalar(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     short* scalar = (short*) malloc(sizeof(short));
     PyObject * result_obj;
-    if (!PyArg_ParseTuple(args, "OhO", &tensor_obj, &scalar, &result_obj)) {
+    if (!PyArg_ParseTuple(args, "OhO", &tensor_obj, scalar, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
@@ -256,7 +256,7 @@ static PyObject * mul_scalar(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     short* scalar = (short*) malloc(sizeof(short));
     PyObject * result_obj;
-    if (!PyArg_ParseTuple(args, "OhO", &tensor_obj, &scalar, &result_obj)) {
+    if (!PyArg_ParseTuple(args, "OhO", &tensor_obj, scalar, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
@@ -271,7 +271,7 @@ static PyObject * div_scalar(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     short* scalar = (short*) malloc(sizeof(short));
     PyObject * result_obj;
-    if (!PyArg_ParseTuple(args, "OhO", &tensor_obj, &scalar, &result_obj)) {
+    if (!PyArg_ParseTuple(args, "OhO", &tensor_obj, scalar, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
@@ -515,7 +515,7 @@ static PyObject * enlarge(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
     unsigned int* scale_factor = (unsigned int*) malloc(sizeof(unsigned int));
     PyObject * result_obj;
-    if (!PyArg_ParseTuple(args, "OIO", &tensor_obj, &scale_factor, &result_obj)) {
+    if (!PyArg_ParseTuple(args, "OIO", &tensor_obj, scale_factor, &result_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
