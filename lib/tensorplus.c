@@ -263,7 +263,7 @@ static PyObject * mul_scalar(PyObject * self, PyObject * args) {
     Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
     if (tensor == NULL) return NULL;
     if (result == NULL) return NULL;
-    mul_scalar_tensor_wrapper(tensor, scalar, result);
+    mul_scalar_tensor_wrapper(tensor, &scalar, result);
     return Py_BuildValue("");
 }
 
@@ -278,7 +278,7 @@ static PyObject * div_scalar(PyObject * self, PyObject * args) {
     Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
     if (tensor == NULL) return NULL;
     if (result == NULL) return NULL;
-    div_scalar_tensor_wrapper(tensor, scalar, result);
+    div_scalar_tensor_wrapper(tensor, &scalar, result);
     return Py_BuildValue("");
 }
 
