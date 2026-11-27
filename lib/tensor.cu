@@ -952,7 +952,7 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
     cudaMemcpy(device_value, value, sizeof(short), cudaMemcpyHostToDevice);
     
     //printf("Calling device function...");
-    if (index < size) {
+    if (index[0] < size) {
       set_tensor<<<1, 1>>>(tensor->size, tensor->data, device_index, device_value);
     }
 
@@ -986,7 +986,7 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
     cudaMalloc((void**) &device_value, sizeof(short));
     //err = cudaGetLastError();
     //printf("Error: %s\n", cudaGetErrorString(err));
-    if (index < size) {
+    if (index[0] < size) {
         get_tensor_value<<<1, 1>>>(tensor->size, tensor->data, device_index, device_value);
     }
     //err = cudaGetLastError();
@@ -1155,11 +1155,11 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
-        sum_tensor<<<1, size>>>(tensor->size, tensor->data, result->data);
+        sum_tensor<<<1, size>>>(tensor->size, tensor->data, result);
     } else if (size / THREADS_PER_BLOCK < BLOCKS_MAXIMUM) {
-        sum_tensor<<<get_device_dim(size), THREADS_PER_BLOCK>>>(tensor->size, tensor->data, result->data);
+        sum_tensor<<<get_device_dim(size), THREADS_PER_BLOCK>>>(tensor->size, tensor->data, result);
     } else {
-        sum_tensor<<<BLOCKS_MAXIMUM, THREADS_PER_BLOCK>>>(tensor->size, tensor->data, result->data);
+        sum_tensor<<<BLOCKS_MAXIMUM, THREADS_PER_BLOCK>>>(tensor->size, tensor->data, result);
     }
     cudaDeviceSynchronize();
 }
@@ -1181,11 +1181,11 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
-        max_tensor<<<1, size>>>(tensor->size, tensor->data, result->data);
+        max_tensor<<<1, size>>>(tensor->size, tensor->data, result);
     } else if (size / THREADS_PER_BLOCK < BLOCKS_MAXIMUM) {
-        max_tensor<<<get_device_dim(size), THREADS_PER_BLOCK>>>(tensor->size, tensor->data, result->data);
+        max_tensor<<<get_device_dim(size), THREADS_PER_BLOCK>>>(tensor->size, tensor->data, result);
     } else {
-        max_tensor<<<BLOCKS_MAXIMUM, THREADS_PER_BLOCK>>>(tensor->size, tensor->data, result->data);
+        max_tensor<<<BLOCKS_MAXIMUM, THREADS_PER_BLOCK>>>(tensor->size, tensor->data, result);
     }
 }
 
@@ -1193,11 +1193,11 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size / THREADS_PER_BLOCK == 0) {
-        min_tensor<<<1, size>>>(tensor->size, tensor->data, result->data);
+        min_tensor<<<1, size>>>(tensor->size, tensor->data, result);
     } else if (size / THREADS_PER_BLOCK < BLOCKS_MAXIMUM) {
-        min_tensor<<<get_device_dim(size), THREADS_PER_BLOCK>>>(tensor->size, tensor->data, result->data);
+        min_tensor<<<get_device_dim(size), THREADS_PER_BLOCK>>>(tensor->size, tensor->data, result);
     } else {
-        min_tensor<<<BLOCKS_MAXIMUM, THREADS_PER_BLOCK>>>(tensor->size, tensor->data, result->data);
+        min_tensor<<<BLOCKS_MAXIMUM, THREADS_PER_BLOCK>>>(tensor->size, tensor->data, result);
     }
 }
 
