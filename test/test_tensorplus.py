@@ -1,4 +1,4 @@
-from tensorplus import _tp as tp
+from tensorplus import _tps as tp
 
 import pytest
 
