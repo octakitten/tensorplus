@@ -1,4 +1,5 @@
-import tensorplus as tp
+from tensorplus import _tp as tp
+
 import pytest
 
 tensor_size = 4
