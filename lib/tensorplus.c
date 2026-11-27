@@ -151,7 +151,7 @@ static PyObject * get(PyObject * self, PyObject * args) {
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
     if (tensor == NULL) return NULL;
     get_tensor_value_wrapper(tensor, index, &value);
-    return PyLong_FromLong(value);
+    return PyLong_FromShort(value);
 }
 
 static PyObject * add(PyObject * self, PyObject * args) {
@@ -305,7 +305,7 @@ static PyObject * sum(PyObject * self, PyObject * args) {
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
     if (tensor == NULL) return NULL;
     sum_tensor_wrapper(tensor, &result);
-    return PyLong_FromLong(result);
+    return PyLong_FromShort(result);
 }
 
 static PyObject * max(PyObject * self, PyObject * args) {
@@ -317,7 +317,7 @@ static PyObject * max(PyObject * self, PyObject * args) {
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
     if (tensor == NULL) return NULL;
     max_tensor_wrapper(tensor, &result);
-    return PyLong_FromLong(result);
+    return PyLong_FromShort(result);
 }
 
 static PyObject * min(PyObject * self, PyObject * args) {
@@ -329,7 +329,7 @@ static PyObject * min(PyObject * self, PyObject * args) {
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
     if (tensor == NULL) return NULL;
     min_tensor_wrapper(tensor, &result);
-    return PyLong_FromLong(result);
+    return PyLong_FromShort(result);
 }
 
 static PyObject * gradient(PyObject * self, PyObject * args) {
