@@ -1237,12 +1237,12 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
     }
 }
 
-/** extern "C" **/ void tensor_enlarge_wrapper(Tensor* tensor, unsigned int scale_factor, Tensor* result) {
+/** extern "C" **/ void tensor_enlarge_wrapper(Tensor* tensor, unsigned int* scale_factor, Tensor* result) {
     unsigned int size;
     cudaMemcpy(&size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     unsigned int* device_scale = NULL;
     cudaMalloc((void**) device_scale, sizeof(unsigned int));
-    cudaMemcpy(device_scale, &scale_factor, sizeof(unsigned int), cudaMemcpyHostToDevice);
+    cudaMemcpy(device_scale, scale_factor, sizeof(unsigned int), cudaMemcpyHostToDevice);
     if (size / THREADS_PER_BLOCK == 0) {
         tensor_enlarge<<<1, size>>>(tensor->size, result->size, device_scale, tensor->data, result->data);
     } else if (size / THREADS_PER_BLOCK < BLOCKS_MAXIMUM) {

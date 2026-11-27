@@ -18,8 +18,8 @@ def destroy_ct(tensor):
 def set(tensor, index, value):
     _tp.set(tensor, index, value)
     
-def get(tensor, index, value):
-    _tp.get(tensor, index, value)
+def get(tensor, index):
+    return _tp.get(tensor, index)
 
 def copy(tensor, result):
     _tp.copy(tensor, result)
@@ -63,14 +63,14 @@ def div_scalar(tensor, scalar, result):
 def transpose(tensor, result):
     _tp.transpose(tensor, result)
 
-def sum(tensor, result):
-    _tp.sum(tensor, result)
+def sum(tensor):
+    return _tp.sum(tensor)
 
 def max(tensor, result):
-    _tp.max(tensor, result)
+    return _tp.max(tensor)
     
 def min(tensor, result):
-    _tp.min(tensor, result)
+    return _tp.min(tensor)
     
 def gradient(tensor, result):
     _tp.gradient(tensor, result)

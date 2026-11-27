@@ -74,7 +74,7 @@ void vector_div_wrapper( Tensor* tensor, Tensor* other, Tensor* vectors, Tensor*
 void vector_gate_wrapper( Tensor* tensor, Tensor* booleans, Tensor* vectors, Tensor* result);
 bool check_size_3( Tensor* tensor,  Tensor* other,  Tensor* result);
 void vector_resize_tensor_wrapper(Tensor* tensor, Tensor* vectors, Tensor* result);
-void tensor_enlarge_wrapper(Tensor* tensor, unsigned int scale_factor, Tensor* result);
+void tensor_enlarge_wrapper(Tensor* tensor, unsigned int* scale_factor, Tensor* result);
 void lesser_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* result);
 void greater_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* result);
 void lesser_equals_tensor_wrapper(Tensor* tensor, Tensor* other, Tensor* result);

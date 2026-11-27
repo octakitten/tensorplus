@@ -118,39 +118,39 @@ static PyObject * printtn(PyObject * self, PyObject * args) {
 
 static PyObject * fill(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    short value;
+    short* value = (short*) malloc(sizeof(short));
     if (!PyArg_ParseTuple(args, "Oh", &tensor_obj, &value)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
     if (tensor == NULL) return NULL;
-    fill_tensor_wrapper(tensor, &value);
+    fill_tensor_wrapper(tensor, value);
     return Py_BuildValue("");
 }
 
 static PyObject * set(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    unsigned int index;
-    short value;
+    unsigned int* index = (unsigned int*) malloc(sizeof(unsigned int));
+    short* value = (short*) malloc(sizeof(short));
     if (!PyArg_ParseTuple(args, "OIh", &tensor_obj, &index, &value)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
     if (tensor == NULL) return NULL;
-    set_tensor_wrapper(tensor, &index, &value);
+    set_tensor_wrapper(tensor, index, value);
     return Py_BuildValue("");
 }
 
 static PyObject * get(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    unsigned int index;
-    short value;
+    unsigned int* index = (unsigned int*) malloc(sizeof(unsigned int));
+    short* value = (short*) malloc(sizeof(short));
     if (!PyArg_ParseTuple(args, "OI", &tensor_obj, &index)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
     if (tensor == NULL) return NULL;
-    get_tensor_value_wrapper(tensor, &index, &value);
+    get_tensor_value_wrapper(tensor, index, value);
     return PyLong_FromLong(value);
 }
 
@@ -224,7 +224,7 @@ static PyObject * div_tn(PyObject * self, PyObject * args) {
 
 static PyObject * add_scalar(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    short scalar;
+    short* scalar = (short*) malloc(sizeof(short));
     PyObject * result_obj;
     if (!PyArg_ParseTuple(args, "OhO", &tensor_obj, &scalar, &result_obj)) {
         return NULL;
@@ -233,13 +233,13 @@ static PyObject * add_scalar(PyObject * self, PyObject * args) {
     Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
     if (tensor == NULL) return NULL;
     if (result == NULL) return NULL;
-    add_scalar_tensor_wrapper(tensor, &scalar, result);
+    add_scalar_tensor_wrapper(tensor, scalar, result);
     return Py_BuildValue("");
 }
 
 static PyObject * sub_scalar(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    short scalar;
+    short* scalar = (short*) malloc(sizeof(short));
     PyObject * result_obj;
     if (!PyArg_ParseTuple(args, "OhO", &tensor_obj, &scalar, &result_obj)) {
         return NULL;
@@ -248,13 +248,13 @@ static PyObject * sub_scalar(PyObject * self, PyObject * args) {
     Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
     if (tensor == NULL) return NULL;
     if (result == NULL) return NULL;
-    sub_scalar_tensor_wrapper(tensor, &scalar, result);
+    sub_scalar_tensor_wrapper(tensor, scalar, result);
     return Py_BuildValue("");
 }
 
 static PyObject * mul_scalar(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    short scalar;
+    short* scalar = (short*) malloc(sizeof(short));
     PyObject * result_obj;
     if (!PyArg_ParseTuple(args, "OhO", &tensor_obj, &scalar, &result_obj)) {
         return NULL;
@@ -263,13 +263,13 @@ static PyObject * mul_scalar(PyObject * self, PyObject * args) {
     Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
     if (tensor == NULL) return NULL;
     if (result == NULL) return NULL;
-    mul_scalar_tensor_wrapper(tensor, &scalar, result);
+    mul_scalar_tensor_wrapper(tensor, scalar, result);
     return Py_BuildValue("");
 }
 
 static PyObject * div_scalar(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    short scalar;
+    short* scalar = (short*) malloc(sizeof(short));
     PyObject * result_obj;
     if (!PyArg_ParseTuple(args, "OhO", &tensor_obj, &scalar, &result_obj)) {
         return NULL;
@@ -278,7 +278,7 @@ static PyObject * div_scalar(PyObject * self, PyObject * args) {
     Tensor* result = (Tensor*) PyCapsule_GetPointer(result_obj, "Tensor");
     if (tensor == NULL) return NULL;
     if (result == NULL) return NULL;
-    div_scalar_tensor_wrapper(tensor, &scalar, result);
+    div_scalar_tensor_wrapper(tensor, scalar, result);
     return Py_BuildValue("");
 }
 
@@ -298,38 +298,38 @@ static PyObject * transpose(PyObject * self, PyObject * args) {
 
 static PyObject * sum(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    short result;
+    short* result = (short*) malloc(sizeof(short));
     if (!PyArg_ParseTuple(args, "O", &tensor_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
     if (tensor == NULL) return NULL;
-    sum_tensor_wrapper(tensor, &result);
-    return PyLong_FromLong(result);
+    sum_tensor_wrapper(tensor, result);
+    return PyLong_FromLong(result[0]);
 }
 
 static PyObject * max(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    short result = 0;
+    short* result = (short*) malloc(sizeof(short));
     if (!PyArg_ParseTuple(args, "O", &tensor_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
     if (tensor == NULL) return NULL;
-    max_tensor_wrapper(tensor, &result);
-    return PyLong_FromLong(result);
+    max_tensor_wrapper(tensor, result);
+    return PyLong_FromLong(result[0]);
 }
 
 static PyObject * min(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    short result = 0;
+    short* result = (short*) malloc(sizeof(short));
     if (!PyArg_ParseTuple(args, "O", &tensor_obj)) {
         return NULL;
     }
     Tensor* tensor = (Tensor*) PyCapsule_GetPointer(tensor_obj, "Tensor");
     if (tensor == NULL) return NULL;
-    min_tensor_wrapper(tensor, &result);
-    return PyLong_FromLong(result);
+    min_tensor_wrapper(tensor, result);
+    return PyLong_FromLong(result[0]);
 }
 
 static PyObject * gradient(PyObject * self, PyObject * args) {
@@ -513,7 +513,7 @@ static PyObject * negate(PyObject * self, PyObject * args) {
 
 static PyObject * enlarge(PyObject * self, PyObject * args) {
     PyObject * tensor_obj;
-    unsigned int scale_factor;
+    unsigned int* scale_factor = (unsigned int*) malloc(sizeof(unsigned int));
     PyObject * result_obj;
     if (!PyArg_ParseTuple(args, "OIO", &tensor_obj, &scale_factor, &result_obj)) {
         return NULL;
