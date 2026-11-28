@@ -558,7 +558,7 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
             unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
             unsigned int block_index = threadIdx.x;
             if (index < size[0]) {
-                tmp[block_index] = src[index]
+                tmp[block_index] = src[index];
                 tmpval += tmp[block_index];
             }
             __syncthreads();
