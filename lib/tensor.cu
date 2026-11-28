@@ -795,7 +795,7 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
     cudaMemcpy(size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size[0] < THREADS_PER_BLOCK) {
         negate_tensor<<<1, size[0], THREADS_PER_BLOCK * sizeof(short)>>>(tensor->size, tensor->data, result->data);
-    } else if (size[0] / THREADS_PER_BLOCK < BLOCKS_AXIMUM) {
+    } else if (size[0] / THREADS_PER_BLOCK < BLOCKS_MAXIMUM) {
         negate_tensor<<<get_device_dim(size[0]), THREADS_PER_BLOCK, THREADS_PER_BLOCK * sizeof(short)>>>(tensor->size, tensor->data, result->data);
     } else {
         negate_tensor<<<BLOCKS_MAXIMUM, THREADS_PER_BLOCK, THREADS_PER_BLOCK * sizeof(short)>>>(tensor->size, tensor->data, result->data);
