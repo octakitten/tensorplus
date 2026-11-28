@@ -790,7 +790,7 @@ __global__ void negate_tensor(unsigned int* size, short* data, short* result) {
   }
 }
 
-** extern "C" **/ void negate_tensor_wrapper(Tensor* tensor, Tensor* result) {
+/** extern "C" **/ void negate_tensor_wrapper(Tensor* tensor, Tensor* result) {
     unsigned int* size = (unsigned int*) malloc(sizeof(unsigned int));
     cudaMemcpy(size, tensor->size, sizeof(unsigned int), cudaMemcpyDeviceToHost);
     if (size[0] < THREADS_PER_BLOCK) {
