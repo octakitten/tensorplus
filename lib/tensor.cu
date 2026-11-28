@@ -537,21 +537,24 @@ __global__ void get_tensor_value(unsigned int* size, short* src, unsigned int* i
         __global__
         void sum_tensor( unsigned int* size, short* src, short* result) {
             extern __shared__ short tmp[];
-            extern __shared__ short tmpval = result[0];
+            extern __shared__ short tmp2[];
             unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
             unsigned int block_index = threadIdx.x;
             if (index < size[0]) {
-                tmp[block_index] = src[index]
-                tmpval += tmp[block_index];
+                tmp[block_index] = src[index];
+                tmp2[block_index] = result[index];
+                if (block_index % 2 == 0) {
+                    tmp2[(block_index / 2)] = tmp[block_index] + tmp[(block_index + 1)];
+                }
             }
             __syncthreads();
-            result[0] = tmpval;
+            result[0] = tmp2[0];
         }
 
         __global__
         void mean_tensor( unsigned int* size, short* src, short* result) {
             extern __shared__ short tmp[];
-            extern __shared__ short tmpval = result[0];
+            extern __shared__ short tmpval;
             unsigned int index = threadIdx.x + blockIdx.x * blockDim.x;
             unsigned int block_index = threadIdx.x;
             if (index < size[0]) {
